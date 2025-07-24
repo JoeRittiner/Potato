@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 import requests
 
-from services.shared_libs import HealthCheckMixin
+from services.shared_libs.HealthCheck.HealthCheckMixin import HealthCheckMixin
 
 
 # A simple class to mix in HealthCheckMixin for testing purposes
