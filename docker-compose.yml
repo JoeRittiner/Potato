@@ -23,7 +23,7 @@ services:
     image: ear/heartbeat-ear
     container_name: ${COMPOSE_PROJECT_NAME}_Ear
     ports:
-      - "8000:5000"
+      - "8000:${HEALTHCHECK_SERVER_PORT}"
     env_file:
       - .env
     depends_on:
@@ -36,7 +36,7 @@ services:
     image: brain/echo-brain
     container_name: ${COMPOSE_PROJECT_NAME}_Brain
     ports:
-      - "8001:5000"
+      - "8001:${HEALTHCHECK_SERVER_PORT}"
     env_file:
       - .env
     depends_on:
@@ -49,7 +49,7 @@ services:
     image: mouth/console-out-mouth
     container_name: ${COMPOSE_PROJECT_NAME}_Mouth
     ports:
-      - "8002:5000"
+      - "8002:${HEALTHCHECK_SERVER_PORT}"
     env_file:
       - .env
     depends_on:
@@ -57,3 +57,7 @@ services:
 
 volumes:
   rabbitmq_data:
+
+models:
+  llm:
+    model: ai/smollm2
