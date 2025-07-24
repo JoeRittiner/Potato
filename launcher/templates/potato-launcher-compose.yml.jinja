@@ -1,4 +1,4 @@
-name: Potato
+name: {{ project_name }}
 
 services:
   rabbitmq:
@@ -28,7 +28,7 @@ services:
         {%- if impl.ports %}
     ports:
           {%- for port in impl.ports %}
-      - "{{ port  }}"
+      - {{ port  }}
           {%- endfor %}
         {%- endif %}
         {%- if impl.environment %}
