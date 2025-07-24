@@ -4,6 +4,7 @@ from typing import Optional
 
 from flask import Flask
 
+from services.shared_libs.HealthCheck.const import HEALTHCHECK_SERVER_PORT
 from services.shared_libs.logging_config import setup_logging
 
 
@@ -11,7 +12,8 @@ class HealthCheckFlask:
     """
     A class to manage a health check server in a separate thread.
     """
-    def __init__(self, health_check_port: int = 5000):
+
+    def __init__(self, health_check_port: int = HEALTHCHECK_SERVER_PORT):
         """
         Initialize the HealthCheckMixin class.
 
