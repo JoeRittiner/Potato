@@ -4,11 +4,11 @@ from unittest.mock import patch
 import pytest
 import requests
 
-from services.shared_libs.HealthCheck.HealthCheckMixin import HealthCheckMixin
+from services.shared_libs.HealthCheck.HealthCheckFlask import HealthCheckFlask
 
 
-# A simple class to mix in HealthCheckMixin for testing purposes
-class MyService(HealthCheckMixin):
+# A simple class to mix in HealthCheckFlask for testing purposes
+class MyService(HealthCheckFlask):
     def __init__(self, port):
         super().__init__(health_check_port=port)
         self._health_app.config.update({
@@ -19,7 +19,7 @@ class MyService(HealthCheckMixin):
         self.ready = True
 
 
-class MyServiceReady(HealthCheckMixin):
+class MyServiceReady(HealthCheckFlask):
     def __init__(self, port):
         super().__init__(health_check_port=port)
         self._health_app.config.update({
@@ -32,7 +32,7 @@ class MyServiceReady(HealthCheckMixin):
         self.status_code = 200
 
 
-class MyServiceNotReady(HealthCheckMixin):
+class MyServiceNotReady(HealthCheckFlask):
     def __init__(self, port):
         super().__init__(health_check_port=port)
         self._health_app.config.update({
@@ -45,7 +45,7 @@ class MyServiceNotReady(HealthCheckMixin):
 
 @pytest.fixture(scope="module")
 def health_service_ready():
-    """Fixture to provide a ready HealthCheckMixin instance."""
+    """Fixture to provide a ready HealthCheckFlask instance."""
     port = 5001  # Use a distinct port for this fixture
     service = MyServiceReady(port)
 
@@ -64,7 +64,7 @@ def health_service_ready():
 
 @pytest.fixture(scope="module")
 def health_service():
-    """Fixture to provide a not-ready HealthCheckMixin instance."""
+    """Fixture to provide a not-ready HealthCheckFlask instance."""
     port = 5002  # Use a distinct port
     service = MyService(port)
     time.sleep(0.5)
@@ -73,7 +73,7 @@ def health_service():
 
 @pytest.fixture(scope="module")
 def health_service_not_ready():
-    """Fixture to provide a not-ready HealthCheckMixin instance."""
+    """Fixture to provide a not-ready HealthCheckFlask instance."""
     port = 5003  # Use a distinct port
     service = MyServiceNotReady(port)
     time.sleep(0.5)
@@ -85,7 +85,7 @@ class TestInitialization:
     @pytest.mark.parametrize("valid_port", [5000, 8000.0])
     def test_initialization_with_valid_port(self, valid_port):
         """Test that the mixin initializes correctly with a valid port."""
-        mixin = HealthCheckMixin(health_check_port=valid_port)
+        mixin = HealthCheckFlask(health_check_port=valid_port)
         assert mixin.health_check_port == valid_port
         assert not mixin.ready
         assert mixin.status is None
@@ -95,14 +95,14 @@ class TestInitialization:
     def test_initialization_with_invalid_port_string(self, invalid_port):
         """Test that initialization raises ValueError for an invalid string port."""
         with pytest.raises(ValueError, match="health_check_port must be a valid port number"):
-            HealthCheckMixin(health_check_port=invalid_port)
+            HealthCheckFlask(health_check_port=invalid_port)
 
 
 class TestProperties:
 
     def test_ready_property(self):
         """Test the ready getter and setter."""
-        mixin = HealthCheckMixin(health_check_port=8003)
+        mixin = HealthCheckFlask(health_check_port=8003)
         assert not mixin.ready
         assert mixin.status is None
         assert mixin.status_code == 503
@@ -116,7 +116,7 @@ class TestProperties:
     @pytest.mark.parametrize("code", [200, 200])
     def test_status_property(self, status, code):
         """Test the status getter and setter."""
-        mixin = HealthCheckMixin(health_check_port=8004)
+        mixin = HealthCheckFlask(health_check_port=8004)
         assert not mixin.ready
         assert mixin.status is None
         assert mixin.status_code == 503
@@ -128,7 +128,7 @@ class TestProperties:
 
     def test_status_property_none(self):
         """Test the status getter and setter."""
-        mixin = HealthCheckMixin(health_check_port=8004)
+        mixin = HealthCheckFlask(health_check_port=8004)
         assert not mixin.ready
         assert mixin.status is None
         assert mixin.status_code == 503
@@ -144,7 +144,7 @@ class TestProperties:
     @pytest.mark.parametrize("code", ["operational", 600, -200, None])
     def test_status_property_bad_status_code(self, code):
         """Test the status getter and setter."""
-        mixin = HealthCheckMixin(health_check_port=8004)
+        mixin = HealthCheckFlask(health_check_port=8004)
         assert not mixin.ready
         assert mixin.status_code == 503
 
@@ -154,7 +154,7 @@ class TestProperties:
 
     def test_uptime_property(self):
         """Test the uptime getter."""
-        mixin = HealthCheckMixin(health_check_port=8005)
+        mixin = HealthCheckFlask(health_check_port=8005)
         time.sleep(0.5)
         assert mixin.uptime is not None
         assert mixin.uptime >= 0.5
@@ -220,7 +220,7 @@ class TestHealthServer:
         """
         # Use a mock for Flask.run to check if it's called in a new thread
         with patch('flask.Flask.run') as mock_run:
-            mixin = HealthCheckMixin(health_check_port=8005)
+            mixin = HealthCheckFlask(health_check_port=8005)
             # Give a brief moment for the thread to potentially start
             time.sleep(0.1)
             # Verify that Flask.run was called
