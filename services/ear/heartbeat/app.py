@@ -1,10 +1,16 @@
 import time
 
 from services.ear.abstract_ear import AbstractEar
+from services.shared_libs import HealthCheckFlask
+from services.shared_libs.HealthCheck import HEALTHCHECK_SERVER_PORT
 from services.shared_libs.RabbitMQ import RMQ_HOST, RMQ_PORT
 
 
 class HeartbeatEar(AbstractEar):
+    def __init__(self, rmq_host=RMQ_HOST, rmq_port=RMQ_PORT, health_port=HEALTHCHECK_SERVER_PORT):
+        AbstractEar.__init__(self, rmq_host, rmq_port)
+        self.health = HealthCheckFlask(health_port)
+        self._setup()
 
     def _setup(self):
         pass
@@ -24,9 +30,10 @@ class HeartbeatEar(AbstractEar):
 
 
 def main():
-    producer = HeartbeatEar(RMQ_HOST, RMQ_PORT)
+    producer = HeartbeatEar(RMQ_HOST, RMQ_PORT, HEALTHCHECK_SERVER_PORT)
     success = producer.connect()
     if success:
+        producer.health.ready = True
         producer.start_listening()
 
 
