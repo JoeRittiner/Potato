@@ -7,14 +7,10 @@ from flask import Flask
 from services.shared_libs.logging_config import setup_logging
 
 
-class HealthCheckMixin:
+class HealthCheckFlask:
     """
-    Mixin class to add health check functionality to other classes.
-
-    This mixin provides a simple HTTP health check server that can be used
-    to monitor the readiness and status of a service.
+    A class to manage a health check server in a separate thread.
     """
-
     def __init__(self, health_check_port: int = 5000):
         """
         Initialize the HealthCheckMixin class.
@@ -125,6 +121,7 @@ class HealthCheckMixin:
 
         :param value: The HTTP status code.
         """
+        # Basic validation
         if not isinstance(value, int) or 0 > value or value > 599:
             raise ValueError("status_code should be valid HTTP status code.")
         self._status_code = value

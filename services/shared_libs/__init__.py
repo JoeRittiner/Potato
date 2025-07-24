@@ -1,3 +1,3 @@
-from .HealthCheck.HealthCheckMixin import HealthCheckMixin
+from .HealthCheck.HealthCheckFlask import HealthCheckFlask
 
-__all__ = ["HealthCheckMixin"]
+__all__ = ["HealthCheckFlask"]
