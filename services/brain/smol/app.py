@@ -43,8 +43,11 @@ class SmolBrain(AbstractBrain):
     def _handle_unacknowledged_messages(self, un_acknowledged) -> None:
         pass
 
-    def _on_connection_blocked(self, method):
-        self.logger.warning(f"Connection blocked: {method.reason}")
+    def _on_connection_blocked(self, blocked):
+        self.logger.warning(f"Connection blocked: {blocked.reason}")
+
+    def _on_connection_unblocked(self, unblocked):
+        self.logger.info(f"Connection unblocked.")
 
 
 def main():

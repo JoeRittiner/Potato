@@ -16,11 +16,16 @@ class RabbitMQProducer(AbstractRabbitMQ, ABC):
         connected = super().connect()
         if connected:
             self._connection.add_on_connection_blocked_callback(self._on_connection_blocked)
+            self._connection.add_on_connection_unblocked_callback(self._on_connection_unblocked)
 
         return connected
 
     @abstractmethod
-    def _on_connection_blocked(self, method: pika.spec.Connection.Blocked):
+    def _on_connection_blocked(self, blocked: pika.spec.Connection.Blocked):
+        pass
+
+    @abstractmethod
+    def _on_connection_unblocked(self, unblocked: pika.spec.Connection.Unblocked):
         pass
 
     def publish(self, message: bytes, routing_key: str, exchange: str = '', durable: bool = True,
