@@ -1,3 +1,0 @@
-import os
-
-HEALTHCHECK_SERVER_PORT = int(os.getenv('HEALTHCHECK_SERVER_PORT', 5000))
