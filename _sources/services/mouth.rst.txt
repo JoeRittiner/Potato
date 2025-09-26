@@ -1,0 +1,29 @@
+mouth package
+=============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   mouth.console_out
+
+Submodules
+----------
+
+mouth.abstract\_mouth module
+----------------------------
+
+.. automodule:: mouth.abstract_mouth
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: mouth
+   :members:
+   :show-inheritance:
+   :undoc-members:

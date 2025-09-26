@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>shared_libs.logging_config &#8212; Potato 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=7026087e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for shared_libs.logging_config</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging.config</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="setup_logging">
+<a class="viewcode-back" href="../../services/shared_libs.html#shared_libs.logging_config.setup_logging">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_logging</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets up consistent logging for a given service or component.</span>
+
+<span class="sd">    :param service_name: The name of the service/component (e.g., &#39;ear-mic&#39;, &#39;brain-llm&#39;).</span>
+<span class="sd">                         Used in log messages to identify the source.</span>
+<span class="sd">    :param log_level: The desired log level (DEBUG, INFO, WARNING, ERROR, CRITICAL).</span>
+<span class="sd">                      Defaults to INFO if not specified, or reads from LOG_LEVEL env var.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">default_log_level</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;LOG_LEVEL&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">log_level</span><span class="p">:</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">log_level</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">default_log_level</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="c1"># Basic configuration dictionary (can be expanded significantly)</span>
+    <span class="c1"># Using dictionary config is generally recommended over basicConfig</span>
+    <span class="n">LOGGING_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;disable_existing_loggers&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># Don&#39;t disable existing loggers (e.g., from imported libraries)</span>
+
+        <span class="s1">&#39;formatters&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;standard&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="c1"># Add service_name to the format</span>
+                <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;[%(asctime)s] [</span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s1">] (%(name)s) [%(levelname)s]: %(message)s&#39;</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;json&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="c1"># For structured logging, useful if you ever move to ELK/Grafana Loki stack</span>
+                <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;{&quot;time&quot;: &quot;</span><span class="si">%(asctime)s</span><span class="s1">&quot;, &quot;level&quot;: &quot;</span><span class="si">%(levelname)s</span><span class="s1">&quot;, &quot;service&quot;: &quot;&#39;</span> <span class="o">+</span> <span class="n">service_name</span> <span class="o">+</span> <span class="s1">&#39;&quot;, &quot;logger&quot;: &quot;</span><span class="si">%(name)s</span><span class="s1">&quot;, &quot;message&quot;: &quot;</span><span class="si">%(message)s</span><span class="s1">&quot;}&#39;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;handlers&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;console&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
+                <span class="s1">&#39;formatter&#39;</span><span class="p">:</span> <span class="s1">&#39;standard&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;logging.StreamHandler&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;stream&#39;</span><span class="p">:</span> <span class="s1">&#39;ext://sys.stdout&#39;</span><span class="p">,</span>  <span class="c1"># Send logs to stdout</span>
+            <span class="p">},</span>
+            <span class="c1"># You could add a file handler here for local file logging if desired:</span>
+            <span class="c1"># &#39;file_handler&#39;: {</span>
+            <span class="c1">#     &#39;level&#39;: level,</span>
+            <span class="c1">#     &#39;formatter&#39;: &#39;standard&#39;,</span>
+            <span class="c1">#     &#39;class&#39;: &#39;logging.handlers.RotatingFileHandler&#39;,</span>
+            <span class="c1">#     &#39;filename&#39;: f&#39;/var/log/{service_name}.log&#39;, # Path inside container</span>
+            <span class="c1">#     &#39;maxBytes&#39;: 10485760, # 10MB</span>
+            <span class="c1">#     &#39;backupCount&#39;: 5,</span>
+            <span class="c1"># }</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;loggers&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1"># Root logger configuration</span>
+            <span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;handlers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;console&#39;</span><span class="p">],</span>  <span class="c1"># Add &#39;file_handler&#39; if you use it</span>
+                <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
+                <span class="s1">&#39;propagate&#39;</span><span class="p">:</span> <span class="kc">False</span>  <span class="c1"># Prevent logs from being sent to root handler twice</span>
+            <span class="p">},</span>
+            <span class="c1"># Specific logger for pika (RabbitMQ client) to control its verbosity</span>
+            <span class="s1">&#39;pika&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;handlers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;console&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span>  <span class="c1"># Keep pika logs less verbose by default</span>
+                <span class="s1">&#39;propagate&#39;</span><span class="p">:</span> <span class="kc">False</span>
+            <span class="p">},</span>
+            <span class="c1"># You can add more specific loggers here for different modules if needed</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">LOGGING_CONFIG</span><span class="p">)</span>
+
+    <span class="c1"># Return the logger for the specific service, so modules can get it</span>
+    <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">service_name</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Potato</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../services/modules.html">Services</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rabbitmq_api.html">RabbitMQ API &amp; Message Flows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/messages.html">Message Definitions</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Josef Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

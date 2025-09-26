@@ -1,0 +1,21 @@
+brain.echo package
+==================
+
+Submodules
+----------
+
+brain.echo.app module
+---------------------
+
+.. automodule:: brain.echo.app
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: brain.echo
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,29 @@
+template package
+================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   template.specific
+
+Submodules
+----------
+
+template.abstract\_template module
+----------------------------------
+
+.. automodule:: template.abstract_template
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: template
+   :members:
+   :show-inheritance:
+   :undoc-members:

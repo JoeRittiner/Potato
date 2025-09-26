@@ -1,0 +1,29 @@
+shared\_libs package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   shared_libs.RabbitMQ
+
+Submodules
+----------
+
+shared\_libs.logging\_config module
+-----------------------------------
+
+.. automodule:: shared_libs.logging_config
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: shared_libs
+   :members:
+   :show-inheritance:
+   :undoc-members:

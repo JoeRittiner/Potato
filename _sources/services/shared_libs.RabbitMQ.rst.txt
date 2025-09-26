@@ -1,0 +1,45 @@
+shared\_libs.RabbitMQ package
+=============================
+
+Submodules
+----------
+
+shared\_libs.RabbitMQ.AbstractRabbitMQ module
+---------------------------------------------
+
+.. automodule:: shared_libs.RabbitMQ.AbstractRabbitMQ
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+shared\_libs.RabbitMQ.RabbitMQConsumer module
+---------------------------------------------
+
+.. automodule:: shared_libs.RabbitMQ.RabbitMQConsumer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+shared\_libs.RabbitMQ.RabbitMQProducer module
+---------------------------------------------
+
+.. automodule:: shared_libs.RabbitMQ.RabbitMQProducer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+shared\_libs.RabbitMQ.const module
+----------------------------------
+
+.. automodule:: shared_libs.RabbitMQ.const
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: shared_libs.RabbitMQ
+   :members:
+   :show-inheritance:
+   :undoc-members:

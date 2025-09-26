@@ -1,0 +1,21 @@
+template.specific package
+=========================
+
+Submodules
+----------
+
+template.specific.app module
+----------------------------
+
+.. automodule:: template.specific.app
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: template.specific
+   :members:
+   :show-inheritance:
+   :undoc-members:

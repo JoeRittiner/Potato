@@ -1,0 +1,29 @@
+brain package
+=============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   brain.echo
+
+Submodules
+----------
+
+brain.abstract\_brain module
+----------------------------
+
+.. automodule:: brain.abstract_brain
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: brain
+   :members:
+   :show-inheritance:
+   :undoc-members:

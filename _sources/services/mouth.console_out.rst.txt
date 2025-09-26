@@ -1,0 +1,21 @@
+mouth.console\_out package
+==========================
+
+Submodules
+----------
+
+mouth.console\_out.app module
+-----------------------------
+
+.. automodule:: mouth.console_out.app
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: mouth.console_out
+   :members:
+   :show-inheritance:
+   :undoc-members:
