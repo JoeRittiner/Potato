@@ -25,6 +25,8 @@ class AbstractRabbitMQ(ABC):
         :param connection_attempts: The maximum number of attempts to connect to the RabbitMQ server.
         :param retry_delay: The interval in seconds between each attempt to connect to the RabbitMQ server.
         """
+        self.logger = setup_logging(service_name=self.__class__.__name__)
+
         if not isinstance(host, str):
             raise TypeError("host must be a string.")
         if not host or host.isspace():
@@ -45,7 +47,6 @@ class AbstractRabbitMQ(ABC):
         elif retry_delay <= 0:
             raise ValueError("retry_delay must be a positive float.")
 
-        self.logger = setup_logging(service_name=self.__class__.__name__)
         self._connection: pika.BlockingConnection | None = None  # TCP connection
         self._channel: BlockingChannel | None = None  #
 

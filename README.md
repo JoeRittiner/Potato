@@ -2,6 +2,8 @@
 🥔
 
 ## TODO:
+
+- [ ] Move Launcher to its own repo?
 - [ ] Project Logging
 - [ ] Detection for "Regular Shutdown"
   - [ ] What is done with the RabbitMQ queues?

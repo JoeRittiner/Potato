@@ -7,6 +7,10 @@ from services.shared_libs.RabbitMQ.AbstractRabbitMQ import AbstractRabbitMQ
 
 
 class RabbitMQProducer(AbstractRabbitMQ, ABC):
+    """
+    Abstract base class for RabbitMQ Producers.
+    Subclasses must implement the `setup` method.
+    """
 
     def publish(self, message: bytes, routing_key: str, exchange: str = '', durable: bool = True,
                 properties: pika.BasicProperties = None) -> None:

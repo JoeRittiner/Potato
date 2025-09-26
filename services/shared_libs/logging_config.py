@@ -2,7 +2,7 @@ import logging.config
 import os
 
 
-def setup_logging(service_name="potato_service", log_level=None):
+def setup_logging(service_name, log_level=None):
     """
     Sets up consistent logging for a given service or component.
 
@@ -26,7 +26,7 @@ def setup_logging(service_name="potato_service", log_level=None):
         'formatters': {
             'standard': {
                 # Add service_name to the format
-                'format': f'[%(asctime)s] [%(levelname)s] [{service_name}] (%(name)s): %(message)s'
+                'format': f'[%(asctime)s] [{service_name}] (%(name)s) [%(levelname)s]: %(message)s'
             },
             'json': {
                 # For structured logging, useful if you ever move to ELK/Grafana Loki stack
