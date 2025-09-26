@@ -15,7 +15,6 @@ Welcome to the documentation for the Potato project.
    services/modules
    api/rabbitmq_api
    api/messages
-   launcher/modules
 
 
 Indices and tables
