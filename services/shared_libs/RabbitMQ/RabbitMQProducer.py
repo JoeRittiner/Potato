@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 import pika
 from pika.exceptions import AMQPChannelError, AMQPConnectionError
@@ -9,8 +9,19 @@ from services.shared_libs.RabbitMQ.AbstractRabbitMQ import AbstractRabbitMQ
 class RabbitMQProducer(AbstractRabbitMQ, ABC):
     """
     Abstract base class for RabbitMQ Producers.
-    Subclasses must implement the `setup` method.
+    Subclasses must implement the `setup` and `_on_connection_blocked` methods.
     """
+
+    def connect(self):
+        connected = super().connect()
+        if connected:
+            self._connection.add_on_connection_blocked_callback(self._on_connection_blocked)
+
+        return connected
+
+    @abstractmethod
+    def _on_connection_blocked(self, method: pika.spec.Connection.Blocked):
+        pass
 
     def publish(self, message: bytes, routing_key: str, exchange: str = '', durable: bool = True,
                 properties: pika.BasicProperties = None) -> None:

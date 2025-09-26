@@ -25,6 +25,9 @@ class EchoBrain(AbstractBrain):
     def _handle_unacknowledged_messages(self, un_acknowledged) -> None:
         pass
 
+    def _on_connection_blocked(self, method):
+        self.logger.warning(f"Connection blocked: {method.reason}")
+
 
 def main():
     consumer = EchoBrain('ear_to_brain', RMQ_HOST, RMQ_PORT)

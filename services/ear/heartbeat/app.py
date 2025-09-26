@@ -28,6 +28,9 @@ class HeartbeatEar(AbstractEar):
         except KeyboardInterrupt:
             pass
 
+    def _on_connection_blocked(self, method):
+        self.logger.warning(f"Connection blocked: {method.reason}")
+
 
 def main():
     producer = HeartbeatEar(RMQ_HOST, RMQ_PORT, HEALTHCHECK_SERVER_PORT)

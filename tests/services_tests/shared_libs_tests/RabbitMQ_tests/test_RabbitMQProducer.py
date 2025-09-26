@@ -19,6 +19,10 @@ class ConcreteProducer(RabbitMQProducer):
         """Concrete implementation for testing."""
         self.setup_called = True
 
+    def _on_connection_blocked(self, method):
+        """Concrete implementation for testing."""
+        self.connection_blocked_called = True
+
 
 class ConcreteAlwaysReadyProducer(ConcreteProducer):
     def _ready(self):
