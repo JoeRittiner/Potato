@@ -48,7 +48,7 @@ class SmolBrain(AbstractBrain):
 
 
 def main():
-    consumer = SmolBrain('brain_to_mouth', RMQ_HOST, RMQ_PORT)
+    consumer = SmolBrain('ear_to_brain', RMQ_HOST, RMQ_PORT)
     success = consumer.connect()
     if success:
         print(' [*] Brain waiting for messages. To exit press CTRL+C')
