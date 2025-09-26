@@ -1,5 +1,7 @@
-# Brain
-This Service processes incoming messages.
+# 🧠 Brain (Processing Services)
 
-## Echo
-This implementation simply prints the message it received from the Queue.
+Brains process input and decide what to send forward.
+
+## Echo Brain
+
+Returns what it receives from the Queue (useful for testing).

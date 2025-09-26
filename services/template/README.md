@@ -1,6 +1,8 @@
 # Template
 This Service serves as a Template/ Example of how to create a new Service.
 
+❗ _This Service is not functional._
+
 ## New Service
 
 ### Steps
@@ -8,7 +10,6 @@ This Service serves as a Template/ Example of how to create a new Service.
 1. Copy this `template` directory into the `services` directory and rename it.
 2. Rename the `abstract_template.py` file to the name of your new service.
 3. Rename the `specific` directory to the name of your new service implementation.
-4. Rename `tests/test_specific.py`.
-5. Delete `Dockerfile`
-6. Create a new `Service` file: `New > Service` (Dockerfile)
-7. Add the new service to `docker-compose.yml`
+4. Rename any instances of `template` and `specific` in the Dockerfile.
+5. Implement the service in the `specific` directory.
+6. Update `docker-compose.yml` as needed.
