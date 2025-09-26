@@ -17,7 +17,7 @@ keeping things playful and modular.
 - **Mouth** → Output services (communicating back)
 - **More** coming soon?
 
-**🔀 Replaceability**
+**🔀 Replaceability:**
 
 Each part is **independent** and **replaceable**. For example, you can swap out one "Ear" for another without touching
 the Brain or Mouth.
@@ -39,7 +39,7 @@ The current MVP Potato runs with:
 - Console Out Mouth
 
 This setup demonstrates the full cycle (input → process → output).
-See the [services](../services/README.md) for more details on each part.
+See the [services](../services) for more details on each part.
 
 ---
 
