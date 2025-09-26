@@ -1,6 +1,6 @@
 # potato-project/docker-compose.yml
 
-name: Potato
+name: basic_Potato
 
 services:
   rabbitmq:
@@ -12,7 +12,7 @@ services:
       - "15672:15672"  # Management port  (http://localhost:15672)
     environment:
       RMQ_DEFAULT_USER: "guest"
-      RMQ_DEFAULT_PASS: "guest" # CHANGE THIS FOR PRODUCTION! (but fine for dev)
+      RMQ_DEFAULT_PASS: "guest" # CHANGE THIS FOR PRODUCTION!
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq # Persist data (queues, messages)
 
@@ -57,7 +57,3 @@ services:
 
 volumes:
   rabbitmq_data:
-
-models:
-  llm:
-    model: ai/smollm2

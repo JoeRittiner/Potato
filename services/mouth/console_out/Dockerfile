@@ -25,22 +25,14 @@ COPY mouth/abstract_mouth.py /app/services/mouth/abstract_mouth.py
 COPY shared_libs /app/services/shared_libs
 COPY ../shared_libs /app/shared_libs
 
-# 5. Copy the healthcheck script.
-# Copy generic healthcheck script or specific healthcheck script
-COPY shared_libs/HealthCheck/healthcheck.py /app/healthcheck.py
-# COPY mouth/console_out/healthcheck.py /app/healthcheck.py
-
-# 6. Install Python dependencies specific to this service.
+# 5. Install Python dependencies specific to this service.
 # The requirements.txt file was copied with the service's own files in step 2.
 RUN pip install --no-cache-dir -r /app/services/shared_libs/requirements.txt
 RUN pip install --no-cache-dir -r /app/services/mouth/console_out/requirements.txt
 
-# 7. Set PYTHONPATH so Python can find the 'services' package from the root of '/app'.
+# 6. Set PYTHONPATH so Python can find the 'services' package from the root of '/app'.
 ENV PYTHONPATH=/app:$PYTHONPATH
 
-# 8. Define the health check for the service.
-HEALTHCHECK --interval=60s --timeout=10s --start-period=10s --retries=3 CMD ["python", "/app/healthcheck.py"]
-
-# 9. Define the command to run the application.
+# 7. Define the command to run the application.
 # Provide the full path to app.py relative to the container's root.
 CMD ["python", "/app/services/mouth/console_out/app.py"]
