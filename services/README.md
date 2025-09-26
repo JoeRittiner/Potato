@@ -43,6 +43,16 @@ Examples:
 
 Prints the response to the console. See [Mouth](./mouth/README.md) for more details.
 
+--- 
+
+# 🗣️ Head (User Interface Services)
+
+Heads handle both user input and outputting responses. They do not handle Processing.
+
+### ▶️ Discord Head _(TODO)_
+
+Uses Discord as a user interface. See [Head](./head/README.md) for more details.
+
 ---
 
 # ⚪ Template
