@@ -17,7 +17,7 @@ class EchoBrain(AbstractBrain):
         print(f" [x] Brain received '{received_text}'")
 
         processed_text = f"Brain echoed: {received_text}"  # Simple echo logic
-        self.publish(processed_text.encode(), 'brain_to_mouth')
+        self.publish(processed_text.encode(), 'brain_to_mouth', properties=properties)
         print(f" [x] Brain sent '{processed_text}' to Mouth")
 
         ch.basic_ack(delivery_tag=method.delivery_tag)

@@ -8,7 +8,8 @@ from services.shared_libs.RabbitMQ.AbstractRabbitMQ import AbstractRabbitMQ
 
 class RabbitMQProducer(AbstractRabbitMQ, ABC):
 
-    def publish(self, message: bytes, routing_key: str, exchange: str = '', durable: bool = True) -> None:
+    def publish(self, message: bytes, routing_key: str, exchange: str = '', durable: bool = True,
+                properties: pika.BasicProperties = None) -> None:
         """
         Publishes a message to the specified exchange and routing key.
 
@@ -16,10 +17,12 @@ class RabbitMQProducer(AbstractRabbitMQ, ABC):
         :param routing_key: The routing key used to route the message to the correct queue.
         :param exchange: The exchange to publish the message to. If left blank, the message will be published to the default exchange.
         :param durable: If True, the message will be persisted to disk. If False, the message will not be persisted.
+        :param properties: The message properties.
         """
-        self._basic_publish(exchange, routing_key, message, durable)
+        self._basic_publish(exchange, routing_key, message, durable, properties)
 
-    def _basic_publish(self, exchange: str, routing_key: str, body: bytes, durable: bool = True) -> None:
+    def _basic_publish(self, exchange: str, routing_key: str, body: bytes, durable: bool = True,
+                       properties: pika.BasicProperties = None) -> None:
         """
         Publishes a message to the specified exchange and routing key.
 
@@ -33,13 +36,19 @@ class RabbitMQProducer(AbstractRabbitMQ, ABC):
             self.logger.error(msg)
             raise RuntimeError(msg + " Call connect() first.")
 
+        if properties is None:
+            properties = pika.BasicProperties(
+                delivery_mode=pika.DeliveryMode.Persistent if durable else pika.DeliveryMode.Transient
+            )
+        else:
+            properties.delivery_mode = 2 if durable else 1
+
         try:
             self._channel.basic_publish(
                 exchange=exchange,
                 routing_key=routing_key,
                 body=body,
-                properties=pika.BasicProperties(
-                    delivery_mode=pika.DeliveryMode.Persistent if durable else pika.DeliveryMode.Transient)
+                properties=properties
             )
             self.logger.info(f"Published message to exchange: {exchange}, routing key: {routing_key}")
         except AMQPChannelError as e:
