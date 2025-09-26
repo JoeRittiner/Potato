@@ -10,7 +10,7 @@ from services.shared_libs.RabbitMQ import RMQ_HOST, RMQ_PORT
 
 class ConsoleOutMouth(AbstractMouth):
     def _setup(self):
-        pass
+        self._channel.queue_declare(queue=self._queue)
 
     def _callback(self, ch: Channel, method: Basic.Deliver, properties: BasicProperties, body: bytes) -> None:
         received_text = body.decode()
