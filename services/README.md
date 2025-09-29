@@ -2,7 +2,7 @@
 
 Ears handle incoming messages.
 
-Examples:
+**Examples:**
 
 - [ ] Microphone
 - [ ] GUI
@@ -18,7 +18,7 @@ A simple Ear that sends heartbeat messages at regular intervals. See [Ear](./ear
 
 Brains process input and decide what to send forward.
 
-Examples:
+**Examples:**
 
 - [ ] LLM APIs
 - [ ] Docker Model Runner
@@ -34,7 +34,7 @@ Returns what it receives (useful for testing). See [Brain](./brain/README.md) fo
 
 Mouths handle output to the user.
 
-Examples:
+**Examples:**
 
 - [ ] GUI
 - [ ] Text-to-Speech
@@ -45,13 +45,13 @@ Prints the response to the console. See [Mouth](./mouth/README.md) for more deta
 
 --- 
 
-# 🗣️ Head (User Interface Services)
+# 🗣️ Head (UI Services)
 
 Heads handle both user input and outputting responses. They do not handle Processing.
 
 ### ▶️ Discord Head _(TODO)_
 
-Uses Discord as a user interface. See [Head](./head/README.md) for more details.
+Uses Discord as a user interface. See [Head](./head/discord/README.md) for more details.
 
 ---
 
