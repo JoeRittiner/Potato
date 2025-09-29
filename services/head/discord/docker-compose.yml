@@ -23,7 +23,7 @@ services:
 
   bot:
     build: .
-    restart: unless-stopped
+    restart: on-failure
     environment:
       RMQ_HOST: "rabbitmq"
       RMQ_PORT: 5672

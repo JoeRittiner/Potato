@@ -47,9 +47,26 @@ for (const file of eventFiles) {
 	}
 }
 
+// Handle shutdown signals with proper binding and debugging
+const signals = ['SIGTERM', 'SIGINT'];
+
+signals.forEach(signal => {
+    process.on(signal, () => {
+        console.log(`Received ${signal} at ${new Date().toISOString()}`);
+        console.log('Emitting shutdown event...');
+        client.emit('shutdown', client, signal);
+    });
+});
+
 // Log in to Discord with the client's token
 const token = process.env.DISCORD_TOKEN;
 if (!token) {
-    throw new Error('DISCORD_TOKEN is not set in .env file!');
+    console.error('DISCORD_TOKEN is not set in .env file!');
+    process.exit(1);
+} else {
+    client.login(token)
+        .catch(error => {
+            console.error('Failed to log in:', error);
+            process.exit(1);
+        });
 }
-client.login(token);
