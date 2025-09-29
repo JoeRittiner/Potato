@@ -1,17 +1,22 @@
 // Require the necessary discord.js classes
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Partials, Events } = require('discord.js');
 
 // Create a new client instance
 const client = new Client({
     intents: [
-        GatewayIntentBits.Guilds
-    ]
+        GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.DirectMessages,
+		GatewayIntentBits.MessageContent,
+    ],
+    partials: [Partials.Channel, Partials.Message]
 });
 
 client.RMQConnection = null;  // RabbitMQ Connection
 client.RMQChannel = null;     // RabbitMQ Channel
+client.messageListener = false;  // RabbitMQ Ear is Listening
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');

@@ -16,13 +16,14 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq # Persist data (queues, messages)
 
-  ear:
+  head:
     build:
-      context: ./services
-      dockerfile: ear/heartbeat/Dockerfile
-    image: ear/heartbeat-ear
-    container_name: ${COMPOSE_PROJECT_NAME}_Ear
+      context: ./services/head/discord
+      dockerfile: Dockerfile
+    image: head/discord-head
+    container_name: ${COMPOSE_PROJECT_NAME}_Head
     env_file:
+      - ./services/head/discord/.env
       - .env
     depends_on:
       - rabbitmq
