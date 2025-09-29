@@ -16,13 +16,15 @@ an **Ear** (input) and a **Mouth** (output).
 ## 📝 TODO / Planned Features
 
 - [ ] **Ear functionality**
-    - [ ] Listen to user messages in text channels
+    - [x] Listen to user messages in text channels
+    - [ ] Improve Message handling
     - [ ] Handle Direct text messages
     - [ ] Listen to audio input in voice channels
 - [ ] **Mouth functionality**
     - [ ] Send text responses to channels
     - [ ] Play audio output in voice channels
 - [ ] Add configurable settings.
+- [ ] Better Documentation
 
 ---
 
