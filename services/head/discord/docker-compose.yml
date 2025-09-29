@@ -3,6 +3,19 @@ version: "3.9"
 name: discord
 
 services:
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: RabbitMQ
+    hostname: rabbitmq  # Important for services to find it
+    ports:
+      - "5672:5672"  # Standard AMQP port
+      - "15672:15672"  # Management port  (http://localhost:15672)
+    environment:
+      RMQ_DEFAULT_USER: "guest"
+      RMQ_DEFAULT_PASS: "guest" # CHANGE THIS FOR PRODUCTION!
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
   update:
     build: .
     env_file: .env
@@ -11,5 +24,14 @@ services:
   bot:
     build: .
     restart: unless-stopped
+    environment:
+      RMQ_HOST: "rabbitmq"
+      RMQ_PORT: 5672
     env_file: .env
     command: npm run start
+    depends_on:
+      - rabbitmq
+
+
+volumes:
+  rabbitmq_data:
