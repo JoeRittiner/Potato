@@ -7,7 +7,8 @@ const RabbitMQ_URL = `amqp://${RabbitMQ_Host}:${RabbitMQ_Port}`;
 
 module.exports = {
     connectToRabbitMQ,
-    disconnectFromRabbitMQ
+    disconnectFromRabbitMQ,
+    getStatus
 }
 
 /**
@@ -48,4 +49,12 @@ async function disconnectFromRabbitMQ(client) {
             resolve();
         });
     });
+}
+
+function getStatus(client) {
+    return {
+        earListening: client.messageListener,
+        connection: !!client.RMQConnection,
+        channel: !!client.RMQChannel,
+    }
 }

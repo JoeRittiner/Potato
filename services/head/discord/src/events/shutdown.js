@@ -1,4 +1,4 @@
-const { disconnectFromRabbitMQ } = require('../rmq');
+const { disconnectFromRabbitMQ } = require('../rmq/RMQConnection.js');
 
 module.exports = {
     name: 'shutdown',

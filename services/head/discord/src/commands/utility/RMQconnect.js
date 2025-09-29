@@ -1,13 +1,12 @@
 const { InteractionContextType, PermissionFlagsBits, SlashCommandBuilder, MessageFlags } = require('discord.js');
-const { connectToRabbitMQ } = require('../../rmq.js');
+const { connectToRabbitMQ } = require('../../rmq/RMQConnection.js');
 
 module.exports = {
     category: 'Utility',
 	data: new SlashCommandBuilder()
 		.setName('connect')
 		.setDescription('Connect to RabbitMQ')
-		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-		.setContexts(InteractionContextType.Guild),
+		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 	async execute(interaction) {
 		try {
 	    	await interaction.reply({
