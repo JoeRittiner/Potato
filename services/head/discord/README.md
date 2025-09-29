@@ -22,6 +22,7 @@ an **Ear** (input) and a **Mouth** (output).
 - [ ] **Mouth functionality**
     - [ ] Send text responses to channels
     - [ ] Play audio output in voice channels
+- [ ] Add configurable settings.
 
 ---
 
