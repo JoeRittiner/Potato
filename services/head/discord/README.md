@@ -21,7 +21,8 @@ an **Ear** (input) and a **Mouth** (output).
     - [ ] Handle Direct text messages
     - [ ] Listen to audio input in voice channels
 - [ ] **Mouth functionality**
-    - [ ] Send text responses to channels
+    - [x] Send text responses to channels
+    - [ ] Add default fallback channel?
     - [ ] Play audio output in voice channels
 - [ ] Add configurable settings.
 - [ ] Better Documentation
