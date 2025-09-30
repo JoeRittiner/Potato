@@ -53,7 +53,8 @@ async function disconnectFromRabbitMQ(client) {
 
 function getStatus(client) {
     return {
-        earListening: client.messageListener,
+        earListener: client.messageListener,
+        mouthPublisher: client.messagePublisher,
         connection: !!client.RMQConnection,
         channel: !!client.RMQChannel,
     }

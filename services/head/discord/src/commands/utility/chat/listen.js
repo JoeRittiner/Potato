@@ -25,6 +25,7 @@ function stopListening(client){
     if (client.messageListener) {
         client.off(Events.MessageCreate, client.messageListener);
         console.log("Message listener removed");
+        client.messageListener = null;
     } else {
         console.log("No message listener found");
     }

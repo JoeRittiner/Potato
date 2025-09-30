@@ -44,15 +44,13 @@ module.exports = {
             stopSpeaking(interaction.client);
             return await interaction.editReply(':hear_no_evil: Deafened and muted!');
         case 'status':
-            await interaction.deferReply();
-            const { earListening, connection, channel } = getStatus(interaction.client);
-            const earStatus = `${earListening ? '✔️' : '❌'} Ear is ${earListening ? 'ready' : 'not ready'}`;
+            await interaction.deferReply({flags: MessageFlags.Ephemeral});
+            const { earListener, mouthPublisher, connection, channel } = getStatus(interaction.client);
+            const earStatus = `${earListener ? '✔️' : '❌'} Ear is ${earListener ? 'ready' : 'not ready'}`;
+            const mouthStatus = `${mouthPublisher ? '✔️' : '❌'} Mouth is ${mouthPublisher ? 'ready' : 'not ready'}`;
             const connectionStatus = `${connection ? '✔️' : '❌'} Connection: ${connection ? 'connected' : 'disconnected'}`;
             const channelStatus = `${channel ? '✔️' : '❌'} Channel: ${channel ? 'active' : 'inactive'}`;
-            return await interaction.editReply({
-                content: `${earStatus}\n${connectionStatus}\n${channelStatus}`,
-                flags: MessageFlags.Ephemeral
-            });
+            return await interaction.editReply(`${earStatus}\n${mouthStatus}\n${connectionStatus}\n${channelStatus}`);
         default:
             return await interaction.reply({ content: ':interrobang: Unknown subcommand. Please use a valid subcommand.', flags: MessageFlags.Ephemeral });
         }
