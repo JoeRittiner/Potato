@@ -26,31 +26,42 @@ module.exports = {
 
 	async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
-        console.log(`${subcommand} command executed`);
-
+        console.log(`/chat ${subcommand} command executed`);
 
         switch (subcommand) {
         case 'listen':
             await interaction.deferReply();
+
             startListening(interaction.client);
+
             return await interaction.editReply(':ear: Listening to what you have to say!');
+
         case 'speak':
-            startSpeaking(interaction.client);
             await interaction.deferReply();
+
+            startSpeaking(interaction.client);
+
             return await interaction.editReply(':mouth: Speaking my mind!');
+
         case 'disable':
             await interaction.deferReply();
+
             stopListening(interaction.client);
             stopSpeaking(interaction.client);
+
             return await interaction.editReply(':hear_no_evil: Deafened and muted!');
+
         case 'status':
             await interaction.deferReply({flags: MessageFlags.Ephemeral});
+
             const { earListener, mouthPublisher, connection, channel } = getStatus(interaction.client);
             const earStatus = `${earListener ? '✔️' : '❌'} Ear is ${earListener ? 'ready' : 'not ready'}`;
             const mouthStatus = `${mouthPublisher ? '✔️' : '❌'} Mouth is ${mouthPublisher ? 'ready' : 'not ready'}`;
             const connectionStatus = `${connection ? '✔️' : '❌'} Connection: ${connection ? 'connected' : 'disconnected'}`;
             const channelStatus = `${channel ? '✔️' : '❌'} Channel: ${channel ? 'active' : 'inactive'}`;
+
             return await interaction.editReply(`${earStatus}\n${mouthStatus}\n${connectionStatus}\n${channelStatus}`);
+
         default:
             return await interaction.reply({ content: ':interrobang: Unknown subcommand. Please use a valid subcommand.', flags: MessageFlags.Ephemeral });
         }
