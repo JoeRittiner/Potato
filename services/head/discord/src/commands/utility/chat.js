@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { startListening, stopListening } = require('./chat/listen.js');
+const { startSpeaking, stopSpeaking } = require('./chat/speak.js');
 const { getStatus } = require('../../rmq/RMQConnection.js');
 
 module.exports = {
@@ -10,6 +11,10 @@ module.exports = {
 		    subcommand
 		        .setName('listen')
 		        .setDescription('Enable chat listening mode'))
+		.addSubcommand(subcommand =>
+		    subcommand
+		        .setName('speak')
+		        .setDescription('Enable chat speak mode'))
 		.addSubcommand(subcommand =>
 		    subcommand
 		        .setName('disable')
@@ -28,7 +33,11 @@ module.exports = {
         case 'listen':
             await interaction.deferReply();
             startListening(interaction.client);
-            return await interaction.editReply(':ear: Listening to what you have to say!');;
+            return await interaction.editReply(':ear: Listening to what you have to say!');
+        case 'speak':
+            startSpeaking(interaction.client);
+            await interaction.deferReply();
+            return await interaction.editReply(':mouth: Speaking my mind!');
         case 'disable':
             await interaction.deferReply();
             stopListening(interaction.client);

@@ -28,20 +28,20 @@ async function startMouthConsumer(client) {
             console.error("[Mouth] Error consuming message:", err);
             return;
         }
-        consumerTag = ok.consumerTag;
-        console.log(`[Mouth] Consuming messages on ${queue} with consumer tag ${consumerTag}`);
+        client.mouthConsumerTag = ok.consumerTag;
+        console.log(`[Mouth] Consuming messages on ${queue} with consumer tag ${client.mouthConsumerTag}`);
     });
     console.log("[Mouth] Consumer started");
 }
 
 function stopMouthConsumer(client) {
-    if (!client.RMQChannel || !client.consumerTag) {
+    if (!client.RMQChannel || !client.mouthConsumerTag) {
         console.log("[Mouth] Not currently listening");
         return;
     }
     console.log("[Mouth] Stopping consumer");
     try {
-        client.RMQChannel.cancel(client.consumerTag);
+        client.RMQChannel.cancel(client.mouthConsumerTag);
         client.mouthConsumerTag = null;
     } catch (error) {
         console.error("[Mouth] Error stopping consumer:", error);
