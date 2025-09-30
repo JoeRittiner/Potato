@@ -21,31 +21,35 @@ module.exports = {
 
 	async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
-        console.log(`${subcommand} command executed`);
+        console.log(`/vc ${subcommand} command executed`);
+
+        // Ensure the user is in a voice channel
+        const channel = interaction.member.voice.channel;
+        if (!channel) {
+            console.log(`${interaction.user.tag} is not in a voice channel`)
+            return interaction.reply({ content: '❗ You are not in a voice channel.', flags: MessageFlags.Ephemeral });
+        }
 
         switch (subcommand) {
         case 'listen':
-            await interaction.deferReply();
-
             console.warn("Not implemented yet");
 
-            return await interaction.editReply('Not implemented yet!');
+            return await interaction.reply('Not implemented yet!');
 
         case 'disable':
-            await interaction.deferReply();
 
             console.warn("Not implemented yet");
 
-            return await interaction.editReply('Not implemented yet!');
+            return await interaction.reply('Not implemented yet!');
 
         case 'status':
-            await interaction.deferReply();
 
             console.warn("Not implemented yet");
 
-            return await interaction.editReply('Not implemented yet!');
+            return await interaction.reply('Not implemented yet!');
 
         default:
+            console.warn(`Unknown subcommand ${subcommand}`);
             return await interaction.reply({ content: ':interrobang: Unknown subcommand. Please use a valid subcommand.', flags: MessageFlags.Ephemeral });
         }
     }
