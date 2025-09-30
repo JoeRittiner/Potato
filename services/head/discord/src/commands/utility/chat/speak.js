@@ -7,41 +7,43 @@ module.exports = {
 }
 
 function startSpeaking(client) {
-    console.log("Staring posting messages from RabbitMQ");
+    console.log("[Speak] Staring posting messages from RabbitMQ");
     if (!client.messagePublisher) {
         client.messagePublisher = async (message) => {
             await handleMessage(client, message);
         }
     } else {
-        console.log("Message publisher already exists");
+        console.log("[Speak] Message publisher already exists");
     }
 
     if (!client.mouthConsumerTag) {
         startMouthConsumer(client);
-        console.log("Mouth consumer started");
+        console.log("[Speak] Mouth consumer started");
     }
 
     client.on("rmqMessage", client.messagePublisher)
 }
 
 function stopSpeaking(client) {
-    console.log("Stopping posting messages from RabbitMQ");
+    console.log("[Speak] Stopping posting messages from RabbitMQ");
     if (client.messagePublisher) {
         client.off("rmqMessage", client.messagePublisher);
-        console.log("Message poster removed");
         client.messagePublisher = null;
+        console.log("[Speak] Message poster removed");
     } else {
-        console.log("No message poster found");
+        console.log("[Speak] No message poster found");
     }
 
     if (client.mouthConsumerTag) {
         stopMouthConsumer(client);
-        console.log("Mouth consumer removed");
+        console.log("[Speak] Consumer removed");
+    } else {
+        console.log("[Speak] No consumer found");
     }
 }
 
 async function handleMessage(client, message) {
-    console.log("Received message from RabbitMQ");
+    console.log("[Speak] Received message from RabbitMQ");
 
     const content = message.content.toString();
     const headers = message.properties.headers || {};
@@ -49,10 +51,10 @@ async function handleMessage(client, message) {
     let discordChannel;
 
     if (!headers.originalChannelId) {
-        console.warn("[Mouth] Received message without originalChannelId, skipping.");
+        console.warn("[Speak] Received message without originalChannelId, skipping.");
     } else {
         discordChannel = await client.channels.fetch(headers.originalChannelId);
         await discordChannel.send(content);
-        console.log(`[Mouth] Sent message to ${discordChannel.name}`);
+        console.log(`[Speak] Sent message to ${discordChannel.name}`);
     }
 }
