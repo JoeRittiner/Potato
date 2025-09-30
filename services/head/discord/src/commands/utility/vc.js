@@ -21,8 +21,8 @@ module.exports = {
 		        .setDescription('Enable voice chat listening mode'))
 		.addSubcommand(subcommand =>
 		    subcommand
-		        .setName('disable')
-		        .setDescription('Disable voice chat functionality'))
+		        .setName('deafen')
+		        .setDescription('Deafen the bot'))
 		.addSubcommand(subcommand =>
 		    subcommand
 		        .setName('status')
@@ -53,7 +53,7 @@ module.exports = {
 
             return await interaction.reply('Not implemented yet!');
 
-        case 'disable':
+        case 'deafen':
 
             console.warn("Not implemented yet");
 
