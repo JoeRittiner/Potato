@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "discord.js": "^14.14.1",
+    "@discordjs/voice": "^0.18.0",
     "dotenv": "^17.2.1",
     "amqplib": "^0.10.8"
   }
