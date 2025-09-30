@@ -1,6 +1,6 @@
 # potato-project/docker-compose.yml
 
-name: basic_Potato
+name: discord_vc_Potato
 
 services:
   rabbitmq:
