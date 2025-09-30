@@ -16,7 +16,7 @@ const client = new Client({
 
 client.RMQConnection = null;  // RabbitMQ Connection
 client.RMQChannel = null;     // RabbitMQ Channel
-client.messageListener = false;  // RabbitMQ Ear is Listening
+client.messageListener = null;  // RabbitMQ Ear is Listening
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
