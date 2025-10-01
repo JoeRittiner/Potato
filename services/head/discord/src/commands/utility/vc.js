@@ -1,6 +1,5 @@
-const { SlashCommandBuilder, MessageFlags } = require('discord.js');
-const { getVoiceConnection } = require('@discordjs/voice');
-const { getOrCreateVoiceConnection } = require('./vc/VCConnection');
+const { SlashCommandBuilder, MessageFlags, ChannelType } = require('discord.js');
+const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
 
 
 module.exports = {
@@ -11,6 +10,12 @@ module.exports = {
 		    subcommand
 		        .setName('join')
 		        .setDescription('Connect Bot to a Voice Channel')
+                .addChannelOption(option => option
+                    .setName('channel')
+                    .setDescription('voice channel')
+                    .addChannelTypes(ChannelType.GuildVoice)
+                    .setRequired(true)
+                )
 		    )
 		.addSubcommand(subcommand =>
 		    subcommand
@@ -33,21 +38,16 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
         console.log(`/vc ${subcommand} command executed`);
 
-        // Ensure the user is in a voice channel
-        const channel = interaction.member.voice.channel;
-        if (!channel) {
-            console.log(`${interaction.user.tag} is not in a voice channel`)
-            return interaction.reply({ content: '❗ You are not in a voice channel.', flags: MessageFlags.Ephemeral });
-        }
-
         switch (subcommand) {
         case 'join':
+            const channel = interaction.options.getChannel('channel');
+
             await interaction.reply({ content: `🔌 Connecting to ${channel.name}...`, flags: MessageFlags.Ephemeral });
-            await handleConnect(interaction);
+            await connectToVC(interaction, channel);
             break;
         case 'leave':
-            await interaction.reply({ content: `🔌 Disconnecting from ${channel.name}...`, flags: MessageFlags.Ephemeral });
-            await handleDisconnect(interaction);
+            await interaction.reply({ content: `🔌 Disconnecting...`, flags: MessageFlags.Ephemeral });
+            await disconnectFromVC(interaction);
             break;
         case 'listen':
             console.warn("Not implemented yet");
@@ -73,29 +73,47 @@ module.exports = {
     }
 };
 
-async function handleConnect(interaction) {
-    const channel = interaction.member.voice.channel;
-
-    const connection = getOrCreateVoiceConnection(interaction, channel);
-    if (connection) {
-        await interaction.editReply(`✅ Connected to ${channel.name}`);
+async function connectToVC(interaction, voiceChannel) {
+    const client = interaction.client;
+    if (client.voiceConnection){
+        console.log(`Already connected to ${client.voiceChannel.name}`);
+        interaction.editReply(`ℹ️ Already connected to ${client.voiceChannel.name}`);
+        return;
     } else {
-        await interaction.editReply('❗ Failed to connect to the voice channel.');
+        try {
+            client.voiceConnection = joinVoiceChannel({
+                    channelId: voiceChannel.id,
+                    guildId: interaction.guild.id,
+                    adapterCreator: interaction.guild.voiceAdapterCreator,
+                    selfDeaf: true,
+                    selfMute: true,
+                });
+            client.voiceChannel = voiceChannel;
+
+            console.log(`Connected to ${voiceChannel.name} in ${interaction.guild.name}`);
+            await interaction.editReply(`✅ Connected to ${voiceChannel.name}`);
+        } catch (error) {
+            console.error('Failed to connect to voice channel:', error);
+            await interaction.editReply('❗ Failed to connect to the voice channel.');
+        }
     }
 }
 
-async function handleDisconnect(interaction) {
-    const guildId = interaction.guild.id;
-    const channel = interaction.member.voice.channel;
+async function disconnectFromVC(interaction) {
+    const client = interaction.client;
 
-    const connection = getVoiceConnection(guildId);
+    if (client.voiceConnection){
+        try {
+            client.voiceConnection.destroy();
 
-    if (connection) {
-        connection.destroy();
-        console.log(`Disconnected from ${channel.name} in ${interaction.guild.name}`);
-        await interaction.editReply(`☑️ Disconnected from ${channel.name}`);
-    } else{
-        console.log("Not connected to a voice channel.")
-        await interaction.editReply('❗ Not connected to a voice channel.');
+            console.log(`Disconnected from ${client.voiceChannel.name} in ${interaction.guild.name}`);
+            await interaction.editReply(`☑️ Disconnected from ${client.voiceChannel.name}`);
+
+            client.voiceChannel = null;
+            client.voiceConnection = null;
+        } catch (error) {
+            console.error('Failed to disconnect from voice channel:', error);
+            await interaction.editReply('❗ Failed to disconnect from the voice channel.');
+        }
     }
 }
