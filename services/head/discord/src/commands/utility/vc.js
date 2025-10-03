@@ -69,7 +69,7 @@ module.exports = {
                 console.error('Failed to stop listening:', error);
                 await interaction.editReply('Failed to stop listening');
             }
-
+            break;
         case 'status':
 
             console.warn("Not implemented yet");
