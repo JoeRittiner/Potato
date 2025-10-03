@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, MessageFlags, ChannelType } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
+const { startEar } = require('./vc/earTCPStream.js');
 
 
 module.exports = {
@@ -50,10 +51,15 @@ module.exports = {
             await disconnectFromVC(interaction);
             break;
         case 'listen':
-            console.warn("Not implemented yet");
-
-            return await interaction.reply('Not implemented yet!');
-
+            await interaction.deferReply();
+            try {
+                await startEar(interaction);
+                await interaction.editReply(`👂 Listening to voice activity in ${interaction.client.voiceChannel.name}`);
+            } catch (error) {
+                console.error('Failed to start listening:', error);
+                await interaction.editReply('Failed to start listening');
+            }
+            break;
         case 'deafen':
 
             console.warn("Not implemented yet");
