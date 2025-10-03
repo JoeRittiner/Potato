@@ -3,6 +3,7 @@ const { PassThrough } = require('stream');
 const { createWriteStream, rename, unlink, mkdirSync } = require('fs');
 const net = require('net');
 const prism = require('prism-media');
+const path = require('path');
 
 module.exports = {
     setupReceiver,
@@ -61,14 +62,8 @@ async function createListeningStream(receiver, user) {
         frameSize: 960, // 20ms frames
     });
 
-    const timestamp = Date.now();
-    const username = user.user.username;  // toLowerCase() ?
-    const tempFilename = `./recordings/tmp/${timestamp}.${username}.pcm`;
-    const finalFilename = `./recordings/${timestamp}.${username}.pcm`;
 
-    mkdirSync('./recordings/tmp', { recursive: true }); // Create tmp directory if it doesn't exist
-    let backupRequired = false;
-    const backupFile = createWriteStream(tempFilename);
+    const { backupStream, markBackupRequired } = createBackupStream(user.id, 'pcm', './recordings');
     const teeStream = new PassThrough();  // Duplicate Stream
 
     // Connect to transcriber TCP server (running in another container)
@@ -85,17 +80,27 @@ async function createListeningStream(receiver, user) {
 
     // Pipe to TCP socket and backup file
     teeStream.pipe(socket);
-    teeStream.pipe(backupFile);
+    teeStream.pipe(backupStream);
 
     socket.on('end', () => {
         console.log(`[LISTEN] Finished streaming to transcriber. (on end)`);
     });
     socket.on('error', (error) => {
         console.error(`[LISTEN] Error streaming to transcriber: ${error}`);
-        backupRequired = true;
+        markBackupRequired();
     });
 
-    backupFile.on('finish', () => {
+}
+
+function createBackupStream(userId, fileExtension, filePath) {
+    const timestamp = Date.now();
+    const tempFilename = path.join(filePath, `${timestamp}.${userId}.${fileExtension}.tmp`);
+    const finalFilename = path.join(filePath, `${timestamp}.${userId}.${fileExtension}`);
+    mkdirSync(filePath, { recursive: true }); // Create directory if not exists
+    let backupRequired = false;
+    const backupStream = createWriteStream(tempFilename);
+
+    backupStream.on('finish', () => {
         if (backupRequired) {
             rename(tempFilename, finalFilename, (err) => {
                 if (err) {
@@ -114,7 +119,9 @@ async function createListeningStream(receiver, user) {
             });
         }
     });
-    backupFile.on('error', (error) => {
+    backupStream.on('error', (error) => {
         console.error(`[LISTEN] Error writing to backup file: ${error}`);
     });
+
+    return { backupStream, markBackupRequired: () => { backupRequired = true; } };
 }
