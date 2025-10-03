@@ -1,34 +1,74 @@
-const { joinVoiceChannel, EndBehaviorType, VoiceConnection } = require('@discordjs/voice');
+const { joinVoiceChannel, EndBehaviorType } = require('@discordjs/voice');
 const { PassThrough } = require('stream');
 const { createWriteStream, rename, unlink, mkdirSync } = require('fs');
 const net = require('net');
 const prism = require('prism-media');
 
 module.exports = {
-    startEar
+    startEar,
+    stopEar
 }
 
 async function startEar(interaction) {
-    if (!interaction.client.voiceConnection) {
+
+    const client = interaction.client;
+    const guild = interaction.guild;
+
+    if (!client.voiceConnection) {
         console.log('Not connected to a voice channel');
-        await interaction.editReply('Can\'t listen. Not connected to a voice channel');
-        return;
+        await interaction.editReply('Can\'t start listening. Not connected to a voice channel');
+        return false;
     }
 
     // Reconnect to voice channel, with different settings
-    interaction.client.voiceConnection = joinVoiceChannel({
-                    channelId: interaction.client.voiceChannel.id,
-                    guildId: interaction.guild.id,
-                    adapterCreator: interaction.guild.voiceAdapterCreator,
+    const conn = joinVoiceChannel({
+                    channelId: client.voiceChannel.id,
+                    guildId: guild.id,
+                    adapterCreator: guild.voiceAdapterCreator,
                     selfDeaf: false,
-                    selfMute: false, // TODO: Make dynamic
+                    selfMute: client.selfMute ?? true,
                 });
 
+    client.voiceConnection = conn;
+    client.selfDeaf = false;
+
     await setupReceiver(
-        interaction.client.voiceConnection,
-        interaction.client.voiceChannel,
-        interaction.guild
+        client.voiceConnection,
+        client.voiceChannel,
+        guild
     )
+
+    return true;
+}
+
+async function stopEar(interaction) {
+
+    const client = interaction.client;
+    const guild = interaction.guild;
+
+    if (!client.voiceConnection) {
+        console.log('Not connected to a voice channel');
+        await interaction.editReply('Can\'t stop listening. Not connected to a voice channel');
+        return false;
+    } 
+    
+    const conn = joinVoiceChannel({
+                    channelId: client.voiceChannel.id,
+                    guildId: guild.id,
+                    adapterCreator: guild.voiceAdapterCreator,
+                    selfDeaf: true,
+                    selfMute: client.selfMute ?? true,
+                });
+
+    client.voiceConnection = conn;
+    client.selfDeaf = true;
+
+    conn.receiver.speaking.removeAllListeners();
+    
+    console.log('Stopped listening to voice channel');
+
+    return true;
+
 }
 
 async function setupReceiver(connection, channel, guild) {

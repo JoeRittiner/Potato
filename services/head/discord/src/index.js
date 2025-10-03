@@ -24,6 +24,9 @@ client.mouthConsumerTag = null; // RabbitMQ Mouth Consumer Tag
 client.voiceConnection = null;  // Voice Connection
 client.voiceChannel = null;     // Voice Channel
 
+client.selfDeaf = true;
+client.selfMute = true;
+
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);

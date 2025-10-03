@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, MessageFlags, ChannelType } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
-const { startEar } = require('./vc/earTCPStream.js');
+const { startEar, stopEar } = require('./vc/earTCPStream.js');
 
 
 module.exports = {
@@ -53,18 +53,22 @@ module.exports = {
         case 'listen':
             await interaction.deferReply();
             try {
-                await startEar(interaction);
-                await interaction.editReply(`👂 Listening to voice activity in ${interaction.client.voiceChannel.name}`);
+                const success = await startEar(interaction);
+                if (success) await interaction.editReply(`👂 Listening to voice activity in ${interaction.client.voiceChannel.name}`);
             } catch (error) {
                 console.error('Failed to start listening:', error);
                 await interaction.editReply('Failed to start listening');
             }
             break;
         case 'deafen':
-
-            console.warn("Not implemented yet");
-
-            return await interaction.reply('Not implemented yet!');
+            await interaction.deferReply();
+            try {
+                const success = await stopEar(interaction);
+                if (success) await interaction.editReply('🙉 Bot is now deafened');
+            } catch (error) {
+                console.error('Failed to stop listening:', error);
+                await interaction.editReply('Failed to stop listening');
+            }
 
         case 'status':
 
@@ -91,8 +95,8 @@ async function connectToVC(interaction, voiceChannel) {
                     channelId: voiceChannel.id,
                     guildId: interaction.guild.id,
                     adapterCreator: interaction.guild.voiceAdapterCreator,
-                    selfDeaf: true,
-                    selfMute: true,
+                    selfDeaf: interaction.client.selfDeaf ?? true,
+                    selfMute: interaction.client.selfMute ?? true,
                 });
             client.voiceChannel = voiceChannel;
 
