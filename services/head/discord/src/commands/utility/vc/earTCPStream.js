@@ -36,6 +36,7 @@ async function startEar(interaction) {
 
     client.voiceConnection = conn;
     client.selfDeaf = false;
+    client.earListening = true;
 
     await setupReceiver(
         client.voiceConnection,
@@ -66,6 +67,7 @@ async function stopEar(interaction) {
 
     client.voiceConnection = conn;
     client.selfDeaf = true;
+    client.earListening = false;
 
     conn.receiver.speaking.removeAllListeners();
     
