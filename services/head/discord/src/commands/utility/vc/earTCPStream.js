@@ -1,6 +1,7 @@
 const { joinVoiceChannel } = require('@discordjs/voice');
 
 const { setupReceiver } = require('./earTCPHelpers.js');
+const { deafen, mute, unDeafen } = require('./vcHelpers');
 
 module.exports = {
     startEar,
@@ -19,16 +20,19 @@ async function startEar(interaction) {
         console.log('Not connected to a voice channel');
         await interaction.editReply('Can\'t start listening. Not connected to a voice channel');
         return false;
+    } else if (client.earListening) {
+        console.log('Already listening to voice channel');
+        await interaction.editReply('Already listening.');
+        return false;
     }
 
     // Reconnect to voice channel, with different settings
-    const conn = joinVoiceChannel({
-                    channelId: client.voiceChannel.id,
-                    guildId: guild.id,
-                    adapterCreator: guild.voiceAdapterCreator,
-                    selfDeaf: false,
-                    selfMute: client.selfMute ?? true,
-                });
+    const conn = unDeafen(client, guild);
+    if (!conn) {
+        console.log('Failed to undeafen/rejoin voice channel');
+        await interaction.editReply('Failed to undeafen/rejoin voice channel');
+        return false;
+    }
 
     client.voiceConnection = conn;
     client.selfDeaf = false;
@@ -53,13 +57,12 @@ async function stopEar(interaction) {
         return false;
     } 
     
-    const conn = joinVoiceChannel({
-                    channelId: client.voiceChannel.id,
-                    guildId: guild.id,
-                    adapterCreator: guild.voiceAdapterCreator,
-                    selfDeaf: true,
-                    selfMute: client.selfMute ?? true,
-                });
+    const conn = deafen(client, guild);
+    if (!conn) {
+        console.log('Failed to deafen/rejoin voice channel');
+        await interaction.editReply('Failed to deafen/rejoin voice channel');
+        return false;
+    }
 
     client.voiceConnection = conn;
     client.selfDeaf = true;
