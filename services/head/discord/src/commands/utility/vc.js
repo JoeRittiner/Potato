@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, ChannelType } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
 const { startEar, stopEar } = require('./vc/earTCPStream.js');
+const { startMouth, stopMouth } = require('./vc/mouthTCPServer.js');
 const { connect, disconnect } = require('./vc/vcHelpers.js');
 
 
@@ -29,8 +30,16 @@ module.exports = {
 		        .setDescription('Enable voice chat listening mode'))
 		.addSubcommand(subcommand =>
 		    subcommand
+		        .setName('speak')
+		        .setDescription('Enable voice chat speaking mode'))
+		.addSubcommand(subcommand =>
+		    subcommand
 		        .setName('deafen')
 		        .setDescription('Deafen the bot'))
+		.addSubcommand(subcommand =>
+		    subcommand
+		        .setName('mute')
+		        .setDescription('Mute the bot'))
 		.addSubcommand(subcommand =>
 		    subcommand
 		        .setName('status')
@@ -69,6 +78,28 @@ module.exports = {
             } catch (error) {
                 console.error('Failed to stop listening:', error);
                 await interaction.editReply('Failed to stop listening');
+            }
+            break;
+
+        case 'speak':
+            await interaction.deferReply();
+            try {
+                const success = await startMouth(interaction);
+                if (success) await interaction.editReply(`🗣️ Speaking in ${interaction.client.voiceChannel.name}`);
+            } catch (error) {
+                console.error('Failed to start speaking:', error);
+                await interaction.editReply('Failed to start speaking');
+            }
+            break;
+
+        case 'mute':
+            await interaction.deferReply();
+            try {
+                const success = await stopMouth(interaction);
+                if (success) await interaction.editReply('🤐 Bot is now muted');
+            } catch (error) {
+                console.error('Failed to stop speaking:', error);
+                await interaction.editReply('Failed to stop speaking');
             }
             break;
         case 'status':
@@ -111,6 +142,7 @@ async function disconnectFromVC(interaction) {
         try {
             client.conn = disconnect(client);
             client.earListening = false;
+            client.mouthSpeaking = false;
 
             console.log(`Disconnected from ${client.voiceChannel.name} in ${interaction.guild.name}`);
             await interaction.editReply(`☑️ Disconnected from ${client.voiceChannel.name}`);
