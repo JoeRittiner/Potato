@@ -29,16 +29,16 @@ async function setupReceiver(connection, channel, guild) {
     receiver.speaking.on('start', async (userId) => {
         try {
             const user = await guild.members.fetch(userId);
-            const username = user ? user.user.username : 'Unknown User';
+            const username = user ? user.user.username : 'Unknown User';  // Name for debugging only. TODO: swap to userId
 
-            console.log(`[LISTEN] ${username} started speaking`);
+            console.log(`[LISTEN] User ${username} started speaking`);
 
             if (!verifyUserRole(user, process.env.TRANSCRIBER_ROLE_ID || null)) {
                 console.log(`[LISTEN] User ${username} cannot be recorded. (Missing required role.)`);
                 return;
             } else {
                 await createListeningStream(receiver, user, host, port);
-                console.log(`[LISTEN] ${username} is being recorded.`);
+                console.log(`[LISTEN] User ${username} is being recorded.`);
             }
 
         } catch (error) {
@@ -47,7 +47,9 @@ async function setupReceiver(connection, channel, guild) {
     });
 
     receiver.speaking.on('end', async (userId) => {
-        console.log(`[LISTEN] ${userId} stopped speaking`);
+        const user = await guild.members.fetch(userId);
+        const username = user ? user.user.username : 'Unknown User';  // Name for debugging only. TODO: swap to userId
+        console.log(`[LISTEN] ${username} stopped speaking`);
     });
 
     console.log('[LISTEN] Receiver set up');
