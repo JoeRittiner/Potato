@@ -37,7 +37,7 @@ function deafen (client, guild) {
     return reJoinVoiceChannel(client, guild);
 }
 
-function mute (client) {
+function mute (client, guild) {
     client.selfMute = true;
     return reJoinVoiceChannel(client, guild);
 }
@@ -47,7 +47,7 @@ function unDeafen (client, guild) {
     return reJoinVoiceChannel(client, guild);
 }
 
-function unMute (client) {
+function unMute (client, guild) {
     client.selfMute = false;
     return reJoinVoiceChannel(client, guild);
 }
