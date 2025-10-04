@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, ChannelType } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
 const { startEar, stopEar } = require('./vc/earTCPStream.js');
+const { connect, disconnect } = require('./vc/vcHelpers.js');
 
 
 module.exports = {
@@ -91,13 +92,7 @@ async function connectToVC(interaction, voiceChannel) {
         return;
     } else {
         try {
-            client.voiceConnection = joinVoiceChannel({
-                    channelId: voiceChannel.id,
-                    guildId: interaction.guild.id,
-                    adapterCreator: interaction.guild.voiceAdapterCreator,
-                    selfDeaf: interaction.client.selfDeaf ?? true,
-                    selfMute: interaction.client.selfMute ?? true,
-                });
+            client.voiceConnection = connect(client, voiceChannel);
             client.voiceChannel = voiceChannel;
 
             console.log(`Connected to ${voiceChannel.name} in ${interaction.guild.name}`);
@@ -114,7 +109,8 @@ async function disconnectFromVC(interaction) {
 
     if (client.voiceConnection){
         try {
-            client.voiceConnection.destroy();
+            client.conn = disconnect(client);
+            client.earListening = false;
 
             console.log(`Disconnected from ${client.voiceChannel.name} in ${interaction.guild.name}`);
             await interaction.editReply(`☑️ Disconnected from ${client.voiceChannel.name}`);
@@ -125,5 +121,8 @@ async function disconnectFromVC(interaction) {
             console.error('Failed to disconnect from voice channel:', error);
             await interaction.editReply('❗ Failed to disconnect from the voice channel.');
         }
+    } else {
+        console.log(`Not connected to any voice channel`);
+        await interaction.editReply(`ℹ️ Not connected to any voice channel`);
     }
 }

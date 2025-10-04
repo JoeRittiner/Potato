@@ -1,10 +1,35 @@
 const { joinVoiceChannel } = require('@discordjs/voice');
 
 module.exports = {
+    connect,
+    disconnect,
     deafen,
     mute,
     unDeafen,
     unMute,
+}
+
+function connect (client, voiceChannel) {
+    const guild = voiceChannel.guild;
+    const conn = joinVoiceChannel({
+            channelId: voiceChannel.id,
+            guildId: guild.id,
+            adapterCreator: guild.voiceAdapterCreator,
+            selfDeaf: true,
+            selfMute: true,
+        });
+    client.selfDeaf = true;
+    client.selfMute = true;
+
+    return conn;
+}
+
+function disconnect (client) {
+    client.voiceConnection.destroy();
+    client.selfDeaf = true;
+    client.selfMute = true;
+
+    return null;
 }
 
 function deafen (client, guild) {
