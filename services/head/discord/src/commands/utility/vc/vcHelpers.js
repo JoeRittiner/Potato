@@ -1,4 +1,4 @@
-const { Client } = require("discord.js");
+const { joinVoiceChannel } = require('@discordjs/voice');
 
 module.exports = {
     deafen,
