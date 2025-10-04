@@ -9,6 +9,9 @@ module.exports = {
     setupReceiver,
 }
 
+const host = process.env.TRANSCRIBER_HOST;
+const port = parseInt(process.env.TRANSCRIBER_PORT, 10);
+
 async function setupReceiver(connection, channel, guild) {
 
     console.log(`[LISTEN] Setting up receiver for ${guild.name} in channel ${channel.name}`);
@@ -26,7 +29,8 @@ async function setupReceiver(connection, channel, guild) {
                 console.log(`[LISTEN] ${user.user.username} does not have required role to be recorded.`);
                 return null;
             } else {
-                await createListeningStream(receiver, user);
+                await createListeningStream(receiver, user, host, port);
+                console.log(`[LISTEN] ${user.user.username} is being recorded.`);
             }
 
         } catch (error) {
@@ -43,7 +47,7 @@ async function setupReceiver(connection, channel, guild) {
 }
 
 
-async function createListeningStream(receiver, user) {
+async function createListeningStream(receiver, user, host, port) {
     const opusStream = receiver.subscribe(
         user.id,
         {
@@ -68,9 +72,8 @@ async function createListeningStream(receiver, user) {
 
     // Connect to transcriber TCP server (running in another container)
     const socket = net.createConnection({
-        // TODO: Make configurable
-        host: 'host.docker.internal',
-        port: 5001
+        host,
+        port
     }, () => {
         console.log(`[LISTEN] Connected to transcriber TCP server for ${user.user.tag}`);
     })
@@ -89,7 +92,6 @@ async function createListeningStream(receiver, user) {
         console.error(`[LISTEN] Error streaming to transcriber: ${error}`);
         markBackupRequired();
     });
-
 }
 
 function createBackupStream(userId, fileExtension, filePath) {
