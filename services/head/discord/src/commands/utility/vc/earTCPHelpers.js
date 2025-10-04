@@ -37,7 +37,7 @@ async function setupReceiver(connection, channel, guild) {
                 console.log(`[LISTEN] User ${username} cannot be recorded. (Missing required role.)`);
                 return;
             } else {
-                await createListeningStream(receiver, user, host, port);
+                createListeningStream(receiver, user, host, port);
                 console.log(`[LISTEN] User ${username} is being recorded.`);
             }
 
@@ -53,7 +53,6 @@ async function setupReceiver(connection, channel, guild) {
     });
 
     console.log('[LISTEN] Receiver set up');
-    return receiver;
 }
 
 
@@ -94,6 +93,32 @@ async function createListeningStream(receiver, user, host, port) {
     // Pipe to TCP socket and backup file
     teeStream.pipe(socket);
     teeStream.pipe(backupStream);
+
+    const cleanup = (reason) => {
+        console.log(`[CLEANUP] Closing streams (${reason})`);
+
+        // Prevent multiple calls
+        if (cleanup.called) return;
+        cleanup.called = true;
+
+        // Safely close each stream/socket
+        try { opusStream.destroy(); } catch {}
+        try { pcmStream.destroy(); } catch {}
+        try { teeStream.destroy(); } catch {}
+        try { backupStream.end(); } catch {}
+        try { socket.end(); } catch {}
+    };
+
+    opusStream.on('end', () => {cleanup('opusStream ended')});
+    opusStream.on('error', (error) => {
+        console.error(`[LISTEN] Error streaming to transcriber: ${error}`);
+        cleanup('opusStream error')
+    });
+
+    pcmStream.on('error', (error) => {
+        console.error(`[LISTEN] Error streaming to transcriber: ${error}`);
+        cleanup('pcmStream error')
+    });
 
     socket.on('end', () => {
         console.log(`[LISTEN] Finished streaming to transcriber. (on end)`);
