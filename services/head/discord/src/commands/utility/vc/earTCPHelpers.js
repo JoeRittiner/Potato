@@ -12,6 +12,15 @@ module.exports = {
 const host = process.env.TRANSCRIBER_HOST;
 const port = parseInt(process.env.TRANSCRIBER_PORT, 10);
 
+function verifyUserRole(user, roleId) {
+    if (!roleId) return true; // No role restriction
+    if (user.roles.cache.has(roleId)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 async function setupReceiver(connection, channel, guild) {
 
     console.log(`[LISTEN] Setting up receiver for ${guild.name} in channel ${channel.name}`);
@@ -20,17 +29,16 @@ async function setupReceiver(connection, channel, guild) {
     receiver.speaking.on('start', async (userId) => {
         try {
             const user = await guild.members.fetch(userId);
-            console.log(`[LISTEN] ${user.user.username} started speaking`);
+            const username = user ? user.user.username : 'Unknown User';
 
-            const requiredRole = '1235283710438277160'; // TODO: Make configurable
-            const hasRequiredRole = user.roles.cache.has(requiredRole);
+            console.log(`[LISTEN] ${username} started speaking`);
 
-            if (!hasRequiredRole) {
-                console.log(`[LISTEN] ${user.user.username} does not have required role to be recorded.`);
-                return null;
+            if (!verifyUserRole(user, process.env.TRANSCRIBER_ROLE_ID || null)) {
+                console.log(`[LISTEN] User ${username} cannot be recorded. (Missing required role.)`);
+                return;
             } else {
                 await createListeningStream(receiver, user, host, port);
-                console.log(`[LISTEN] ${user.user.username} is being recorded.`);
+                console.log(`[LISTEN] ${username} is being recorded.`);
             }
 
         } catch (error) {
