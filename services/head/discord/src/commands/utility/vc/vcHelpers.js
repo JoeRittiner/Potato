@@ -29,7 +29,6 @@ function unMute (client) {
 
 function reJoinVoiceChannel(client, guild) {
     if (!client.voiceChannel) return null;
-    if (client.voiceConnection) client.voiceConnection.destroy();
     const conn = joinVoiceChannel({
         channelId: client.voiceChannel.id,
         guildId: guild.id,
