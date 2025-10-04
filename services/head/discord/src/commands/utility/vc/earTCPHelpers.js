@@ -53,7 +53,7 @@ async function createListeningStream(receiver, user, host, port) {
         {
             end: {
                 behavior: EndBehaviorType.AfterSilence,
-                duration: 1000,  // TODO: Make configurable
+                duration: parseInt(process.env.TRANSCRIBER_SILENCE_DURATION, 10) || 1000
             }
         }
     );

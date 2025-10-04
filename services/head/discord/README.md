@@ -33,14 +33,14 @@ an **Ear** (input) and a **Mouth** (output).
 
 Create a `.env` file with the following variables:
 
-| Variable            | Description                                                                                                                 |
-|---------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| `DISCORD_CLIENT_ID` | Your bot token from the [Discord Developer Portal](https://discord.com/developers/applications)                             |
-| `DISCORD_TOKEN`     | [Discord Developer Portal](https://discord.com/developers/applications) > "General Information" > application id            |
-| `DISCORD_GUILD_ID`  | [Enable developer mode](https://support.discord.com/hc/en-us/articles/206346498) > Right-click the server title > "Copy ID" |
-| `TRANSCRIBER_HOST`  | The host to send the audio to.                                                                                              |
-| `TRANSCRIBER_PORT`  | The port to send the audio to.                                                                                              |
-
+| Variable                       | Description                                                                                                                 |
+|--------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `DISCORD_CLIENT_ID`            | Your bot token from the [Discord Developer Portal](https://discord.com/developers/applications)                             |
+| `DISCORD_TOKEN`                | [Discord Developer Portal](https://discord.com/developers/applications) > "General Information" > application id            |
+| `DISCORD_GUILD_ID`             | [Enable developer mode](https://support.discord.com/hc/en-us/articles/206346498) > Right-click the server title > "Copy ID" |
+| `TRANSCRIBER_HOST`             | The host to send the audio to.                                                                                              |
+| `TRANSCRIBER_PORT`             | The port to send the audio to.                                                                                              |
+| `TRANSCRIBER_SILENCE_DURATION` | The duration of silence before recording is stopped and sent to the transcriber. (Defaults to 1000ms)                       |
 ---
 
 ## 🚀 Usage
