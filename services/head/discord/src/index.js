@@ -26,6 +26,7 @@ client.voiceChannel = null;     // Voice Channel
 
 client.earListening = false;    // Ear is listening
 client.mouthSpeaking = false;   // Mouth is speaking
+client.mouthServer = null;   // Mouth TCP Server
 
 client.selfDeaf = true;
 client.selfMute = true;

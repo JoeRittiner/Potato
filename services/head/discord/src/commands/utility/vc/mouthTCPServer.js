@@ -35,7 +35,7 @@ async function startMouth(interaction) {
     client.selfMute = false;
     client.mouthSpeaking = true;
 
-    await setupServer(conn);
+    client.mouthServer = await setupServer(conn);
 
     return true;
 }
@@ -61,7 +61,7 @@ async function stopMouth(interaction) {
     client.selfMute = true;
     client.mouthSpeaking = false;
 
-    await teardownServer();
+    await teardownServer(client.mouthServer);
 
     return true;
 }
