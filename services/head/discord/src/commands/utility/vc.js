@@ -107,7 +107,7 @@ module.exports = {
 
             const {voiceConnection, voiceChannel, mouthServer, earServer, listening, speaking, deafened, muted} = getStatus(interaction.client);
             const connectionStatus = `${voiceConnection ? '✔️' : '❌'} Connection: ${voiceConnection ? 'connected' : 'disconnected'}`;
-            const channelStatus = `${voiceChannel ? '✔️' : '❌'} Channel: ${voiceChannel ? <#`${voiceChannel.id}>` : 'none'}`;
+            const channelStatus = `${voiceChannel ? '✔️' : '❌'} Channel: ${voiceChannel ? `<#${voiceChannel.id}>` : 'none'}`;
             const earServerStatus = `${earServer ? '✔️' : '❌'} Ear Server: ${earServer ? 'reachable' : 'not reachable'}`;
             const mouthServerStatus = `${mouthServer ? '✔️' : '❌'} Mouth Server: ${mouthServer ? 'running' : 'not running'}`;
             const listeningStatus = `${listening ? '✔️' : '❌'} Listening: ${listening ? 'enabled' : 'disabled'}`;
