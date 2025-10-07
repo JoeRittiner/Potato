@@ -8,4 +8,6 @@ Uses Discord as a user interface.
 
 # TODO
 
-- [ ] Implement Discord Head
+- [x] Implement Discord Head: ~~"Quick" and dirty.~~ _Proof of Concept._
+- [ ] Rework most of this Service
+    - [ ] How? TBD
