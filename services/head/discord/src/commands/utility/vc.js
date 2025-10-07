@@ -103,14 +103,24 @@ module.exports = {
             }
             break;
         case 'status':
+            await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
-            console.warn("Not implemented yet");
+            const {voiceConnection, voiceChannel, mouthServer, earServer, listening, speaking, deafened, muted} = getStatus(interaction.client);
+            const connectionStatus = `${voiceConnection ? '✔️' : '❌'} Connection: ${voiceConnection ? 'connected' : 'disconnected'}`;
+            const channelStatus = `${voiceChannel ? '✔️' : '❌'} Channel: ${voiceChannel ? `${voiceChannel.name}` : 'none'}`;
+            const earServerStatus = `${earServer ? '✔️' : '❌'} Ear Server: ${earServer ? 'reachable' : 'not reachable'}`;
+            const mouthServerStatus = `${mouthServer ? '✔️' : '❌'} Mouth Server: ${mouthServer ? 'running' : 'not running'}`;
+            const listeningStatus = `${listening ? '✔️' : '❌'} Listening: ${listening ? 'enabled' : 'disabled'}`;
+            const speakingStatus = `${speaking ? '✔️' : '❌'} Speaking: ${speaking ? 'enabled' : 'disabled'}`;
+            const deafenedStatus = `${deafened ? '🙉' : '🎤'} Deafened: ${deafened ? 'yes' : 'no'}`;
+            const mutedStatus = `${muted ? '🔇' : '🔊'} Muted: ${muted ? 'yes' : 'no'}`;
 
-            return await interaction.reply('Not implemented yet!');
+            await interaction.editReply(`${connectionStatus}\n${channelStatus}\n\n${listeningStatus}\n${earServerStatus}\n${deafenedStatus}\n\n${speakingStatus}\n${mouthServerStatus}\n${mutedStatus}`);
+            break;
 
         default:
             console.warn(`Unknown subcommand ${subcommand}`);
-            return await interaction.reply({ content: ':interrobang: Unknown subcommand. Please use a valid subcommand.', flags: MessageFlags.Ephemeral });
+            return await interaction.reply({ content: '⁉️ Unknown subcommand. Please use a valid subcommand.', flags: MessageFlags.Ephemeral });
         }
     }
 };
@@ -158,3 +168,20 @@ async function disconnectFromVC(interaction) {
         await interaction.editReply(`ℹ️ Not connected to any voice channel`);
     }
 }
+
+function getStatus(client) {
+    return {
+        voiceConnection : client.voiceConnection ?? null,
+        voiceChannel : client.voiceChannel ?? null,
+
+        // TODO: check if servers are actually running/reachable
+        earServer : null,
+        mouthServer : client.mouthServer ? client.mouthServer.listening : null,
+
+        listening: client.earListening ?? false,
+        speaking: client.mouthSpeaking ?? false,
+
+        deafened: client.selfDeaf ?? true,
+        muted: client.selfMute ?? true,
+    }
+} 
