@@ -7,6 +7,9 @@ module.exports = {
     teardownServer
 }
 
+const host = process.env.MOUTH_HOST
+const port = process.env.MOUTH_PORT
+
 /**
  * Establishes a TCP server to receive an audio stream and play it back in a voice channel.
  * @param {VoiceConnection} connection 
@@ -47,8 +50,8 @@ async function setupServer(connection) {
         });
     });
 
-    server.listen(50007, '0.0.0.0', () => {   // TODO make host:port configurable
-        console.log(`Mouth TCP server listening on port ${50007}`);
+    server.listen(port, host, () => {
+        console.log(`Mouth TCP server listening on port ${port}`);
     });
     server.on('connection', (socket) => {
         console.log('New client connected to mouth TCP server');
