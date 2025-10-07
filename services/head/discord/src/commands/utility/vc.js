@@ -53,7 +53,7 @@ module.exports = {
         case 'join':
             const channel = interaction.options.getChannel('channel');
 
-            await interaction.reply({ content: `🔌 Connecting to ${channel.name}...`, flags: MessageFlags.Ephemeral });
+            await interaction.reply({ content: `🔌 Connecting to <#${channel.id}>...`, flags: MessageFlags.Ephemeral });
             await connectToVC(interaction, channel);
             break;
         case 'leave':
@@ -64,7 +64,7 @@ module.exports = {
             await interaction.deferReply();
             try {
                 const success = await startEar(interaction);
-                if (success) await interaction.editReply(`👂 Listening to voice activity in ${interaction.client.voiceChannel.name}`);
+                if (success) await interaction.editReply(`👂 Listening to voice activity in <#${interaction.client.voiceChannel.id}>`);
             } catch (error) {
                 console.error('Failed to start listening:', error);
                 await interaction.editReply('Failed to start listening');
@@ -85,7 +85,7 @@ module.exports = {
             await interaction.deferReply();
             try {
                 const success = await startMouth(interaction);
-                if (success) await interaction.editReply(`🗣️ Speaking in ${interaction.client.voiceChannel.name}`);
+                if (success) await interaction.editReply(`🗣️ Speaking in <#${interaction.client.voiceChannel.id}>`);
             } catch (error) {
                 console.error('Failed to start speaking:', error);
                 await interaction.editReply('Failed to start speaking');
@@ -107,7 +107,7 @@ module.exports = {
 
             const {voiceConnection, voiceChannel, mouthServer, earServer, listening, speaking, deafened, muted} = getStatus(interaction.client);
             const connectionStatus = `${voiceConnection ? '✔️' : '❌'} Connection: ${voiceConnection ? 'connected' : 'disconnected'}`;
-            const channelStatus = `${voiceChannel ? '✔️' : '❌'} Channel: ${voiceChannel ? `${voiceChannel.name}` : 'none'}`;
+            const channelStatus = `${voiceChannel ? '✔️' : '❌'} Channel: ${voiceChannel ? <#`${voiceChannel.id}>` : 'none'}`;
             const earServerStatus = `${earServer ? '✔️' : '❌'} Ear Server: ${earServer ? 'reachable' : 'not reachable'}`;
             const mouthServerStatus = `${mouthServer ? '✔️' : '❌'} Mouth Server: ${mouthServer ? 'running' : 'not running'}`;
             const listeningStatus = `${listening ? '✔️' : '❌'} Listening: ${listening ? 'enabled' : 'disabled'}`;
@@ -129,7 +129,7 @@ async function connectToVC(interaction, voiceChannel) {
     const client = interaction.client;
     if (client.voiceConnection){
         console.log(`Already connected to ${client.voiceChannel.name}`);
-        interaction.editReply(`ℹ️ Already connected to ${client.voiceChannel.name}`);
+        interaction.editReply(`ℹ️ Already connected to <#${client.voiceChannel.id}>`);
         return;
     } else {
         try {
@@ -137,7 +137,7 @@ async function connectToVC(interaction, voiceChannel) {
             client.voiceChannel = voiceChannel;
 
             console.log(`Connected to ${voiceChannel.name} in ${interaction.guild.name}`);
-            await interaction.editReply(`✅ Connected to ${voiceChannel.name}`);
+            await interaction.editReply(`✅ Connected to <#${voiceChannel.id}>`);
         } catch (error) {
             console.error('Failed to connect to voice channel:', error);
             await interaction.editReply('❗ Failed to connect to the voice channel.');
@@ -155,7 +155,7 @@ async function disconnectFromVC(interaction) {
             client.mouthSpeaking = false;
 
             console.log(`Disconnected from ${client.voiceChannel.name} in ${interaction.guild.name}`);
-            await interaction.editReply(`☑️ Disconnected from ${client.voiceChannel.name}`);
+            await interaction.editReply(`☑️ Disconnected from <#${client.voiceChannel.id}>`);
 
             client.voiceChannel = null;
             client.voiceConnection = null;
