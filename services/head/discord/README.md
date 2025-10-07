@@ -1,9 +1,5 @@
 # 🗣️ Discord Head
 
-[![Node.js](https://img.shields.io/node/v/JoeRittiner/Potato?logo=node.js&label=Node.js)](https://nodejs.org/)
-[![discord.js version](https://img.shields.io/github/package-json/dependency-version/JoeRittiner/Potato/discord.js?logo=discord&label=discord.js)](https://discord.js.org/)
-[![Docker](https://img.shields.io/badge/docker-supported-2496ED?logo=docker)](https://www.docker.com/)
-
 The **Discord Head** is a **Head**-service implementation that uses a [discord.js](https://discord.js.org/) bot as both
 an **Ear** (input) and a **Mouth** (output).
 
