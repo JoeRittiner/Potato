@@ -13,7 +13,7 @@ SAMPLE_WIDTH = 2  # bytes (16-bit PCM)
 MONO = 1
 STEREO = 2
 
-HOST = "127.0.0.0"
+HOST = "127.0.0.1"
 PORT = 50007
 
 logging.basicConfig(level=logging.DEBUG)
