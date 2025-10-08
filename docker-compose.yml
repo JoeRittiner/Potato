@@ -25,6 +25,8 @@ services:
     env_file:
       - ./services/head/discord/.env
       - .env
+    ports:
+      - "50007:50007"
     depends_on:
       - rabbitmq
 

@@ -8,6 +8,7 @@ const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildVoiceStates,
 		GatewayIntentBits.DirectMessages,
 		GatewayIntentBits.MessageContent,
     ],
@@ -16,8 +17,19 @@ const client = new Client({
 
 client.RMQConnection = null;  // RabbitMQ Connection
 client.RMQChannel = null;     // RabbitMQ Channel
+
 client.messageListener = null;  // RabbitMQ Ear is Listening
 client.mouthConsumerTag = null; // RabbitMQ Mouth Consumer Tag
+
+client.voiceConnection = null;  // Voice Connection
+client.voiceChannel = null;     // Voice Channel
+
+client.earListening = false;    // Ear is listening
+client.mouthSpeaking = false;   // Mouth is speaking
+client.mouthServer = null;   // Mouth TCP Server
+
+client.selfDeaf = true;
+client.selfMute = true;
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
