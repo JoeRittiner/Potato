@@ -24,6 +24,7 @@ an **Ear** (input) and a **Mouth** (output).
     - [x] Send text responses to channels
   - [x] Play audio output in voice channels
     - [ ] Add default fallback channel?
+- [ ] Split into multiple services (Same Token)
 - [ ] Add configurable settings.
 - [ ] Better Documentation
 
