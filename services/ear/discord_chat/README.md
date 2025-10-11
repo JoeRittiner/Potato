@@ -13,5 +13,7 @@ handled Chat-Ear, Chat-Mouth, VC-Ear and VC-Mouth.)
 - [ ] Doublecheck `tsconfig.json`
 - [ ] Doublecheck `index.ts`
 - [ ] Base Docker Image for all Discord related Services (shared_libs)
-- [ ] Check what happens when two bots have the same command names
+- [x] Check what happens when two bots have the same command names
+    - One Bot will raise a `DiscordAPIError[10062]: Unknown interaction` and/ or
+      `DiscordAPIError[40060]: Interaction has already been acknowledged.` and crash.
 - [ ] Check what happens when you `register-command.js`. (Are old commands overwritten?)
