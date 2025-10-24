@@ -27,19 +27,6 @@ export class Bot extends Client {
         });
         this.commands = new Collection<string, Command>(); // Will be overwritten
 
-        this.on(
-            Events.MessageCreate, (message: Message) => {
-                if (!this.listening) return;
-                console.log(`Sending message: '${message.content}'`)
-                try {
-                    // TODO: make configurable what queue to send to
-                    this.rmqManager.sendToQueue('ear_to_brain', message.content);
-                } catch (error) {
-                    console.error('Error sending message to RMQ:', error);
-                }
-            }
-        )
-
         this.rmqManager.on('connected', () => {
             console.log('RMQ connected.');
         });
@@ -56,7 +43,20 @@ export class Bot extends Client {
         this.rmqManager.on('error', (error) => {
             console.error('RMQ error event:', error);
         });
-        
+
+        this.on(Events.MessageCreate, (message: Message) => this.onMessage(this.rmqManager, message));
+    }
+
+    // Settup for later expansion. Hence the injection of rmqManager.
+    private onMessage(rmqManager: RMQManager,  message: Message) {
+        if (!this.listening) return;
+        console.log(`Sending message: '${message.content}'`)
+        try {
+            // TODO: make configurable what queue to send to
+            rmqManager.sendMessage('ear_to_brain', message.content);
+        } catch (error) {
+            console.error('Error sending message to RMQ:', error);
+        }
     }
 
     public set listening(value: boolean) {
@@ -71,7 +71,7 @@ export class Bot extends Client {
         return this.isReady() && this.rmqManager.connection !== null && this.rmqManager.channel !== null;
     }
 
-    async start(token: string) {
+    public async start(token: string) {
         await loadCommands(this, '../commands');
         await registerEvents(this, '../events');
 
@@ -84,7 +84,7 @@ export class Bot extends Client {
         await this.login(token);
     }
 
-    async stop() {
+    public async stop() {
         try {
             await this.rmqManager.disconnect();
         } catch (error) {

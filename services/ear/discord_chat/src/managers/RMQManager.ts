@@ -75,7 +75,7 @@ export class RMQManager extends EventEmitter {
         });
     }
 
-    public async sendToQueue(queueName: string, message: string): Promise<void> {
+    public async sendMessage(routingKey: string, message: string): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!this.channel) {
                 return reject(new Error('Channel is not created'));
@@ -83,7 +83,7 @@ export class RMQManager extends EventEmitter {
             if (!message) {
                 return reject(new Error('Message is empty'));
             }
-            this.channel.sendToQueue(queueName, Buffer.from(message), {}, (error: any, _ok: any) => {
+            this.channel.publish('', routingKey, Buffer.from(message), (error: any, _ok: any) => {
                 if (error) {
                     return reject(error);
                 }
