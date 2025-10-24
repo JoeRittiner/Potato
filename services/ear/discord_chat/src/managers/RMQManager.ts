@@ -42,8 +42,6 @@ export class RMQManager {
                     console.error('Connection is null after connect call');
                     return reject(new Error('Connection is null after connect call'));
                 }
-                
-                console.log(`Connection state after connect call: ${this.connection}`);
 
                 this.connection.on('error', (err: any) => {
                     console.error('RabbitMQ connection error:', err);
@@ -71,10 +69,39 @@ export class RMQManager {
                     console.error('Failed to close RabbitMQ connection:', error);
                     return reject(error);
                 }
-                console.log('RabbitMQ connection closed');
                 resolve();
             });
-            console.log(`Connection state after close call: ${this.connection}`);
         });
+    }
+
+        public async sendToQueue(queueName: string, message: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (!this.channel) {
+                console.error('Channel is not created');
+                return reject(new Error('Channel is not created'));
+            }
+            if (!message) {
+                console.warn('Message is empty');
+                return reject(new Error('Message is empty'));
+            }
+            this.channel.sendToQueue(queueName, Buffer.from(message), {}, (error: any, _ok: any) => {
+                if (error) {
+                    console.error('Failed to send message to queue:', error);
+                    return reject(error);
+                }
+                console.log(`Message sent to queue '${queueName}': ${message}`);
+                resolve();
+            });
+        });
+    }
+
+    public getStatus(): {
+        connected: boolean;
+        channelCreated: boolean;
+    } {
+        return {
+            connected: !!this.connection,
+            channelCreated: !!this.channel
+        }
     }
 }
