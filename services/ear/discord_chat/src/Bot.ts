@@ -43,4 +43,8 @@ export class Bot extends Client {
 
         await this.login(token);
     }
+
+    async stop() {
+        await this.destroy();
+    }
 }
