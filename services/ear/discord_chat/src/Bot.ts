@@ -2,12 +2,13 @@ import { Client, Collection, Events, GatewayIntentBits, Message, Partials } from
 import { loadCommands } from './managers/CommandManager.js';
 import { registerEvents } from './managers/EventManager.js';
 import { Command } from './types/Command.js';
+import { RMQManager } from './managers/RMQManager.js';
 
 
 export class Bot extends Client {
 
     public commands: Collection<string, Command>;
-    public messageHandler: CallableFunction | null = null;
+    public rmqManager: RMQManager = new RMQManager();
 
     private listening: boolean = false;
 
@@ -30,7 +31,12 @@ export class Bot extends Client {
             Events.MessageCreate, (message: Message) => {
                 if (!this.listening) return;
                 console.log(`Sending message: '${message.content}'`)
-                // TODO: implement RMQ sending logic
+                try {
+                    // TODO: make configurable what queue to send to
+                    this.rmqManager.sendToQueue('ear_to_brain', message.content);
+                } catch (error) {
+                    console.error('Error sending message to RMQ:', error);
+                }
             }
         )
         
@@ -41,10 +47,21 @@ export class Bot extends Client {
         await loadCommands(this, '../commands');
         await registerEvents(this, '../events');
 
+        try {
+            await this.rmqManager.connect();
+        } catch (error) {
+            console.error('Error connecting to RMQ:', error);
+        }
+
         await this.login(token);
     }
 
     async stop() {
+        try {
+            await this.rmqManager.disconnect();
+        } catch (error) {
+            console.error('Error disconnecting from RMQ:', error);
+        }
         await this.destroy();
     }
 }
