@@ -1,56 +1,59 @@
 import amqp from 'amqplib/callback_api.js';
+import EventEmitter from 'events';
 
 const HOST = process.env.RMQ_HOST || 'localhost';
 const PORT = process.env.RMQ_PORT || '5672'
 const URL = `amqp://${HOST}:${PORT}`;
 
-export class RMQManager {
+export class RMQManager extends EventEmitter {
     private url: string;
 
     public connection: any;
     public channel: any;
 
     constructor(url: string = URL) {
+        super();
         this.url = url;
     }
 
     public async connect(): Promise<void> {
         return new Promise((resolve, reject) => {
             if (this.connection) {
-                console.info('Already connected to RabbitMQ');
+                console.debug('Already connected to RabbitMQ');
                 return resolve();
             }
 
             amqp.connect(this.url, (error0: any, connection: any) => {
                 if (error0) {
-                    console.error('Failed to connect to RabbitMQ:', error0);
+                    this.emit('error', error0);
                     return reject(error0);
                 }
                 this.connection = connection;
                 console.log('Connected to RabbitMQ');
                 connection.createChannel((error1: any, channel: any) => {
                     if (error1) {
-                        console.error('Failed to create channel:', error1);
+                        this.emit('error', error1);
                         return reject(error1);
                     }
                     this.channel = channel;
-                    console.log('Channel created');
+                    this.emit('channel_open', channel);
                     resolve();
                 });
 
                 if (!this.connection) {
-                    console.error('Connection is null after connect call');
-                    return reject(new Error('Connection is null after connect call'));
+                    const err = new Error('Connection is null after connect call')
+                    this.emit('error', err);
+                    return reject(err);
                 }
 
                 this.connection.on('error', (err: any) => {
-                    console.error('RabbitMQ connection error:', err);
+                    this.emit('error', err);
                     this.connection = null;
                     this.channel = null;
                 });
 
                 this.connection.on('close', () => {
-                    console.info('RabbitMQ connection closed');
+                    this.emit('disconnected');
                     this.connection = null;
                     this.channel = null;
                 });
@@ -61,12 +64,10 @@ export class RMQManager {
     public async disconnect(): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!this.connection) {
-                console.warn('No RabbitMQ connection to close');
                 return resolve();
             }
             this.connection.close((error: any) => {
                 if (error) {
-                    console.error('Failed to close RabbitMQ connection:', error);
                     return reject(error);
                 }
                 resolve();
@@ -74,22 +75,19 @@ export class RMQManager {
         });
     }
 
-        public async sendToQueue(queueName: string, message: string): Promise<void> {
+    public async sendToQueue(queueName: string, message: string): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!this.channel) {
-                console.error('Channel is not created');
                 return reject(new Error('Channel is not created'));
             }
             if (!message) {
-                console.warn('Message is empty');
                 return reject(new Error('Message is empty'));
             }
             this.channel.sendToQueue(queueName, Buffer.from(message), {}, (error: any, _ok: any) => {
                 if (error) {
-                    console.error('Failed to send message to queue:', error);
                     return reject(error);
                 }
-                console.log(`Message sent to queue '${queueName}': ${message}`);
+                this.emit('message_sent', message);
                 resolve();
             });
         });

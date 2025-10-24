@@ -39,6 +39,23 @@ export class Bot extends Client {
                 }
             }
         )
+
+        this.rmqManager.on('connected', () => {
+            console.log('RMQ connected.');
+        });
+
+        this.rmqManager.on('channel_open', (channel) => {
+            console.log('RMQ channel opened.');
+        });
+
+        this.rmqManager.on('disconnected', () => {
+            this.listening = false;
+            console.log('RMQ disconnected, disabling listening mode');
+        });
+        
+        this.rmqManager.on('error', (error) => {
+            console.error('RMQ error event:', error);
+        });
         
     }
 
