@@ -30,6 +30,18 @@ services:
     depends_on:
       - rabbitmq
 
+  ear:
+    build:
+      context: ./services
+      dockerfile: ear/discord_chat/Dockerfile
+    image: ear/discord-chat-ear
+    container_name: ${COMPOSE_PROJECT_NAME}_Ear
+    env_file:
+      - ./services/ear/discord_chat/.env
+      - .env
+    depends_on:
+      - rabbitmq
+
   brain:
     build:
       context: ./services
