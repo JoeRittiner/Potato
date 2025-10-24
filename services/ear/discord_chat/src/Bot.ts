@@ -10,7 +10,7 @@ export class Bot extends Client {
     public commands: Collection<string, Command>;
     public rmqManager: RMQManager = new RMQManager();
 
-    private listening: boolean = false;
+    private _listening: boolean = false;
 
     constructor() {
         super({
@@ -59,8 +59,19 @@ export class Bot extends Client {
         
     }
 
-    async start(token: string) {
+    public set listening(value: boolean) {
+        this._listening = value ?? this.ready();
+    }
 
+    public get listening(): boolean {
+        return this._listening;
+    }
+
+    private ready(): boolean {
+        return this.isReady() && this.rmqManager.connection !== null && this.rmqManager.channel !== null;
+    }
+
+    async start(token: string) {
         await loadCommands(this, '../commands');
         await registerEvents(this, '../events');
 

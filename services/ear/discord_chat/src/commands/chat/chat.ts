@@ -18,16 +18,18 @@ export default {
         const client = interaction.client as Bot;
         console.log(`/chat ${subcommad} command executed`);
 
-        const tmp_msg: InteractionReplyOptions = {content: "Not Implemented", flags: MessageFlags.Ephemeral}; // TODO: Remove 
-
         switch (subcommad){
             case 'listen':
-                await interaction.reply(tmp_msg);
-                console.log("'/chat listen' command not implemented")
+                client.listening = true;
+                if (!client.listening) {
+                    await interaction.reply({content: "Cannot enable listening mode: Bot is not ready or RMQ is not connected.", flags: MessageFlags.Ephemeral});
+                    return;
+                }
+                await interaction.reply("Chat listening mode enabled.");
                 return;
             case 'disable':
-                await interaction.reply(tmp_msg);
-                console.log("'/chat listen' command not implemented")
+                client.listening = false;
+                await interaction.reply("Chat listening mode disabled.");
                 return;
             default:
                 console.log("Unknown subcommand");
