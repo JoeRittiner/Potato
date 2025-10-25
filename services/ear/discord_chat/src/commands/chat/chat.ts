@@ -14,11 +14,11 @@ export default {
                 .setName('disable')
                 .setDescription('Disable chat listening mode')),
     execute: async (interaction: ChatInputCommandInteraction) => {
-        const subcommad = interaction.options.getSubcommand();
+        const subcommand = interaction.options.getSubcommand();
         const client = interaction.client as Bot;
-        console.log(`/chat ${subcommad} command executed`);
+        console.log(`/chat ${subcommand} command executed`);
 
-        switch (subcommad){
+        switch (subcommand){
             case 'listen':
                 if (client.listening) {
                     await interaction.reply({content: "Chat listening mode is already enabled.", flags: MessageFlags.Ephemeral});
@@ -38,7 +38,7 @@ export default {
                 return;
             default:
                 // Ignore unknown subcommands. Potentially let other Bot modules handle them.
-                console.debug(`Unknown subcommand '$/chat ${subcommad}'. Ignoring.`);
+                console.debug(`Unknown subcommand '$/chat ${subcommand}'. Ignoring.`);
                 return;
         }
     }
