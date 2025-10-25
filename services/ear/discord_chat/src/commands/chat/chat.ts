@@ -20,19 +20,25 @@ export default {
 
         switch (subcommad){
             case 'listen':
-                client.listening = true;
-                if (!client.listening) {
-                    await interaction.reply({content: "Cannot enable listening mode: Bot is not ready or RMQ is not connected.", flags: MessageFlags.Ephemeral});
+                if (client.listening) {
+                    await interaction.reply({content: "Chat listening mode is already enabled.", flags: MessageFlags.Ephemeral});
                     return;
                 }
-                await interaction.reply("Chat listening mode enabled.");
+
+                client.listening = true; // Try to enable listening mode
+                if (!client.listening) { // Unable to enable listening mode
+                    await interaction.reply({content: "Cannot enable listening mode: RMQ is not connected.", flags: MessageFlags.Ephemeral});
+                } else { // listening mode enabled
+                    await interaction.reply(`Chat listening mode enabled: ${client.listening}`);
+                }
                 return;
             case 'disable':
                 client.listening = false;
                 await interaction.reply("Chat listening mode disabled.");
                 return;
             default:
-                console.log("Unknown subcommand");
+                // Ignore unknown subcommands. Potentially let other Bot modules handle them.
+                console.debug(`Unknown subcommand '$/chat ${subcommad}'. Ignoring.`);
                 return;
         }
     }
