@@ -22,8 +22,14 @@ release = '0.0.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',  # For Google and NumPy style docstrings
-    'sphinx.ext.viewcode'   # Optional: to include links to source code
+    'sphinx.ext.viewcode',  # Optional: to include links to source code
+    'myst_parser',
 ]
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 templates_path = ['_templates']
 exclude_patterns = []

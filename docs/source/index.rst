@@ -13,8 +13,7 @@ Welcome to the documentation for the Potato project.
    :caption: Contents:
 
    services/modules
-   api/rabbitmq_api
-   api/messages
+   messaging_api
 
 
 Indices and tables
