@@ -1,142 +1,155 @@
-# 📨 Potato Messaging API Specification
+# ✉️ ️ Potato Messaging API Specification
 
-> **Version:** 1.0<br>
-> **Scope:** Internal communication between Potato microservices via RabbitMQ<br>
+> **Version:** 1.0  
+> **Scope:** Internal communication between Potato microservices via RabbitMQ  
 > **Goal:** Provide a consistent, low-coupling, high-cohesion message architecture.
+
 ---
 
 ## 1. Overview
 
-Potato services usually communicate via **RabbitMQ** using a **topic exchange pattern**.<br>
-Messages are schema-validated JSON objects wrapped in a common envelope.
+Potato services (Ear, Brain, Mouth, etc.) communicate asynchronously through [RabbitMQ]([https://www.rabbitmq.com/]),
+using a topic-based messaging pattern.  
+Each service publishes and consumes structured messages that follow a shared contract defined by this specification.
 
-> **Note:** Some Services may communicate via other means. Those are not covered by this specification.
+### Design Goals
 
-The key design goals are:
-
-- **🔗 Low coupling:** Producers and consumers only depend on shared contracts (exchange, routing key, schema).
-- **🧱 High cohesion:** Each service focuses on a single responsibility.
-- **🧠 Clarity:** Consistent naming, versioning, and message structure across all services.
-- **🧰 Extensibility:** Easy to add new message types without breaking existing integrations.
+- **Low Coupling**: Services are independent and unaware of each other's internals.
+- **High Cohesion**: Each service focuses on a single, well-defined role.
+- **Consistency**: Common naming, structure, and metadata across all messages.
+- **Versioning**: Schema and routing versions enable safe evolution.
 
 ---
 
-## 2. Exchanges & Routing Keys
+## 2. Design Rationale
 
-### 2.1 Exchange Naming Convention
+### Core Principles
 
-`potato.<domain>.exchange`
+| Principle                    | Description                                                                                                                                          |
+|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Exchange-First Design**    | Producers publish to exchanges, not directly to queues. Consumers bind queues as needed. This enables flexibility and independence between services. |
+| **Explicit Domains**         | Exchanges are grouped by logical domain (e.g., `input`, `response`, `events`) to keep traffic organized.                                             |
+| **Topic Routing**            | Topic exchanges support routing by pattern, enabling selective listening (e.g., `ear.*.v1`).                                                         |
+| **Schema-Defined Payloads**  | Every message is validated against a defined schema (JSON Schema or Pydantic model).                                                                 |
+| **Self-Describing Metadata** | All messages include metadata (version, timestamps, correlation IDs) for observability and debugging.                                                |
 
-| Field      | Description                                     |
-|------------|-------------------------------------------------|
-| `potato`   | Project namespace prefix                        |
-| `<domain>` | Functional area (input, response, events, etc.) |
+### Analogy
 
-Exchanges are generally created as **durable topic exchanges.**
-The **type (topic)** allows flexible routing via patterns such as `<service>.<mode>.<version?>`.
+Think of RabbitMQ as a **postal system**:
 
-> **Note:** The `potato` prefix is used to avoid name collisions with external exchanges. If multiple `potato`
-> "instances" are running at once, this prefix may change to reflect their separation.
+- **Exchanges** = Post office counters
+- **Routing keys** = Address labels
+- **Queues** = Mailboxes
+- **Producers** = Letter senders
+- **Consumers** = Letter recipients
 
-### 2.2 Routing Keys
+Producers only drop letters at the post office. They don’t need to know who will receive them or how they’ll get there.
 
-`<service>.<mode>.<version?>`
+---
 
-| Field        | Description                                                                     |
-|--------------|---------------------------------------------------------------------------------|
-| `<service>`  | The producing service (e.g., `ear`, `brain`, `mouth`)                           |
-| `<mode>`     | The message purpose or category (e.g., `text`, `speech`, `command`, `reasoned`) |
-| `<version?>` | Optional semantic version (e.g., `v1`, `v2`) for routing or schema evolution    |
+## 3. Exchanges & Routing Keys
 
-### 2.3 Examples
+### 3.1 Exchange Naming Convention
+
+```
+potato.<domain>.exchange
+```
+
+| Field      | Description                                           |
+|------------|-------------------------------------------------------|
+| `potato`   | Project namespace prefix                              |
+| `<domain>` | Functional area (e.g., `input`, `response`, `events`) |
+
+> All exchanges are **durable** and of type **topic**.
+
+### 3.2 Routing Key Convention
+
+```
+<service>.<mode>.<version?>
+```
+
+| Field      | Description                                          |
+|------------|------------------------------------------------------|
+| `service`  | Producing service (e.g., `ear`, `brain`, `mouth`)    |
+| `mode`     | Message purpose (e.g., `text`, `speech`, `reasoned`) |
+| `version?` | Optional version tag (`v1`, `v2`, etc.)              |
+
+### 3.3 Examples
 
 | Domain   | Exchange Name              | Type  | Example Routing Keys                             |
 |----------|----------------------------|-------|--------------------------------------------------|
 | input    | `potato.input.exchange`    | topic | `ear.text.v1`, `ear.speech.v1`, `ear.command.v1` |
 | response | `potato.response.exchange` | topic | `brain.reasoned.v1`, `brain.context.v1`          |
 | events   | `potato.events.exchange`   | topic | `body.state.v1`, `mouth.spoken.v1`               |
-
-> **🧭 Rule of thumb:**
-> - `input`: inbound data or commands
-> - `response`: processed output
-> - `events`: service-emitted notifications or state changes
+| control  | `potato.control.exchange`  | topic | `system.heartbeat.v1`, `system.shutdown.v1`      |
 
 ---
 
-## 3. Queues
+## 4. Queues
 
-### 3.1 Queue naming convention
+### 4.1 Queue Naming Convention
 
-`potato.<service>.queue`
+```
+potato.<service>.queue
+```
 
-| Field       | Description                                          |
-|-------------|------------------------------------------------------|
-| `potato`    | Project prefix                                       |
-| `<service>` | Logical service name (ear, brain, mouth, body, etc.) |
+| Field       | Description                                                  |
+|-------------|--------------------------------------------------------------|
+| `potato`    | Project prefix                                               |
+| `<service>` | Logical service name (e.g., `ear`, `brain`, `mouth`, `body`) |
 
-Queues are usually durable and bound to one or more exchanges via binding keys.
-Each service consumes from exactly one queue (for simplicity and clarity).
+> Queues are **durable** and bound to one or more exchanges using binding keys that match routing key patterns.
 
-> **Note:** If a service is stateful, or a body part is represented by different services, each queue should only be
-> bound to one service. This avoids mismatched message processing.
-> <br>E.g. an "Echo Brain" and an "LLM Brain" should not share a queue, to ensure the stateful "LLM Brain" has the full
-> context.
-> <br>A setup with multiple "LLM Brains" also should not share a queue, unless they share the same state.
+### 4.2 Examples
 
-### 3.2 Examples
+| Service | Queue Name           | Typical Bindings                                 |
+|---------|----------------------|--------------------------------------------------|
+| brain   | `potato.brain.queue` | `potato.input.exchange` → `ear.*.v1`             |
+| mouth   | `potato.mouth.queue` | `potato.response.exchange` → `brain.reasoned.v1` |
 
-| Service | Queue Name           | Example Bindings                                   |
-|---------|----------------------|----------------------------------------------------|
-| brain   | `potato.brain.queue` | `potato.input.exchange` → `ear.*.v1`               |
-| mouth   | `potato.mouth.queue` | `potato.response.exchange` → `brain.stream.v1`     |
-| body    | `potato.body.queue`  | `potato.events.exchange` → `#` (all event traffic) |
+---
 
---- 
+## 5. Message Format
 
-## 4. Message Structure
+Each message has a consistent envelope structure, separating **metadata** (`meta`) from **payload** (business data).
 
-Messages are JSON objects conforming to a shared envelope format, consisting of:
-
-- `meta`: Standardized Metadata (common for all messages)
-- `payload`: Service-specific payload
-
-### 4.1 Message Envelope
+### 5.1 Envelope Structure
 
 ```json
 {
   "meta": {
     "schema": "ear.text",
     "version": "1",
-    "message_id": "uuid",
-    "correlation_id": "uuid",
-    "service": "ear",
-    "domain": "input",
-    "mode": "text",
-    "timestamp": "2025-10-10T12:34:56Z"
+    "sent_by": "ear",
+    "sent_at": "2025-10-10T08:31:12Z",
+    "message_id": "uuid-1234-5678",
+    "correlation_id": "uuid-9999-0000"
   },
   "payload": {
-    /* Service-specific content */
+    /* service-specific content */
   }
 }
 ```
 
-### 4.2 Required Headers (AMQP Properties)
+### 5.2 Required Headers (AMQP Properties)
 
-| Header           | Type          | Description                           |
-|------------------|---------------|---------------------------------------|
-| `content-type`   | string        | Always `application/json`             |
-| `schema-name`    | string        | e.g., `ear.text`                      |
-| `schema-version` | string/int    | e.g., `1`                             |
-| `message-id`     | string (UUID) | Unique identifier for deduplication   |
-| `correlation-id` | string (UUID) | Used for request/response correlation |
-| `source`         | string        | Producing service name                |
-| `timestamp`      | integer       | Unix time (ms)                        |
+| Header           | Type       | Description                         |
+|------------------|------------|-------------------------------------|
+| `content-type`   | string     | Always `application/json`           |
+| `schema-name`    | string     | e.g., `ear.text`                    |
+| `schema-version` | string/int | e.g., `1`                           |
+| `message-id`     | UUID 4     | Unique identifier for deduplication |
+| `correlation-id` | UUID 4     | Correlates related messages         |
+| `source`         | string     | Producing service name              |
+| `timestamp`      | integer    | Unix time (ms)                      |
 
-### 4.3 Schema Definition
+### 5.3 Schema Files
 
-All message payloads are validated against JSON Schemas located in:
+All message payloads are defined under:
 
-`/schemas/<service>/<schema-name>.v<version>.json`
+```
+/schemas/<service>/<schema-name>.v<version>.json
+```
 
 Example:
 
@@ -146,41 +159,74 @@ schemas/
       └── text.v1.json
 ```
 
-> See [/schemas/pydantic/v1/model.py](../schemas/pydantic/v1/models.py) for Python-level models reflecting these
-> schemas.<br>
-> Validation is performed both before publishing (producer side) and upon message receipt (consumer side).
+---
+
+## 6. Versioning
+
+- **Minor changes** (adding optional fields): Update schema, keep same routing key version.
+- **Breaking changes** (rename/remove fields): Create new schema version and routing key (e.g., `.v2`).
+- **Routing keys** and **schema versions** should always match.
+
+Consumers must opt in to new versions explicitly via their binding keys.
 
 ---
 
-## 5. Versioning
+## 7. Error Handling
 
-- **Minor changes** (adding optional fields): increment schema file version, update routing key if needed.
-- **Major changes** (removing/ renaming fields, changing field types): create new schema file with `v_`and route via a
-  new key (e.g., `ear.text.v2`).
-- Consumers must explicitly opt-in to new versions by binding to the new routing key.
-
-> Schema version and routing key version should always match.
+- **DLX (Dead Letter Exchange):** `potato.dead.exchange` handles failed messages.
+- **Retries:** Use retry queues or exponential backoff with message headers like `x-retry-count`.
+- **Invalid Messages:** Consumers should log errors, acknowledge to prevent loops, and republish invalid payloads to the
+  DLX.
 
 ---
 
-## 6. Error Handling
+## 8. Governance & Validation
 
-- Each queue is configured with a Dead Letter Exchange (DLX): `potato.dead.exchange` where failed or unacknowledged
-  messages are routed.
-- Consumers should:
-    - Validate schema upon receipt
-    - Log and acknowledge invalid messages (to avoid infinite redelivery)
-    - Optionally republish to potato.dead.exchange with failure metadata
+### Enforcement Layers
 
---- 
+1. **Schema Repository** – All message schemas live under `/schemas/`.
+2. **Validation Library** – Shared Pydantic validator used by all producers and consumers.
+3. **Runtime Validation** – Consumers reject or route invalid messages to DLX.
 
-## 7. TODO
+---
 
-- [ ] Define Message Structure. See: [4.1 Message Envelope](#41-message-envelope)
-- [ ] Implement PyDantic(?) BaseModels
-- [ ] Implement Changes in [RabbitMQ Classes](../services/shared_libs/RabbitMQ/)
-- [ ] Add infrastructure script (like `setup_rabbitmq.py`)?
-    - For declaring exchanges, queues, bindings, etc.
-- [ ] Implement Changes in [Services](../services/)
-- [ ] Define Implementation specific (metadata) schemas in relevant branches.
-- [ ] Testing?
+## 9. Example Flow
+
+**Scenario:** Ear hears text → Brain reasons → Mouth speaks
+
+1. **Ear** publishes to `potato.input.exchange`
+    - Routing key: `ear.text.v1`
+    - Schema: `schemas/ear/text.v1.json`
+2. **Brain** consumes from `potato.brain.queue`
+    - Bound to `ear.*.v1`
+    - Publishes to `potato.response.exchange` using `brain.reasoned.v1`
+3. **Mouth** consumes from `potato.mouth.queue`
+    - Bound to `brain.reasoned.v1`
+    - Triggers speech synthesis
+
+---
+
+## 10. Defined Domains and Modes
+
+| Domain     | Description                                 |
+|------------|---------------------------------------------|
+| `input`    | Inbound data from users                     |
+| `response` | Reasoned or processed outputs               |
+| `events`   | System or state changes                     |
+| `control`  | Internal coordination and lifecycle signals |
+
+### Mode Reference (by Service)
+
+| Service | Mode       | Example Routing Key | Description                                           |
+|---------|------------|---------------------|-------------------------------------------------------|
+| ear     | `text`     | `ear.text.v1`       | Text-based user input                                 |
+| ear     | `speech`   | `ear.speech.v1`     | Audio Transcript (speech recognition)                 |
+| brain   | `reasoned` | `brain.reasoned.v1` | Logical reasoning results                             |
+| brain   | `stream`   | `brain.stream.v1`   | Individual output tokens as part of a larger response |
+| brain   | `context`  | `brain.context.v1`  | Context updates                                       |
+
+---
+
+## 11. Future Extensions
+
+- Automated documentation generation from schemas
