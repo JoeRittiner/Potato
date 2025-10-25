@@ -16,8 +16,8 @@ an **Ear** (input) and a **Mouth** (output).
 ## 📝 TODO / Planned Features
 
 - **Ear functionality**
-    - [x] Listen to user messages in text channels
-  - [x] Handle Direct text messages
+    - [x] ~~Listen to user messages in text channels~~ (Moved to [Ear](../../ear/discord_chat) service)
+    - [x] ~~Handle Direct text messages~~ (Moved to [Ear](../../ear/discord_chat) service)
   - [x] Listen to audio input in voice channels
     - [ ] Improve Message handling
 - **Mouth functionality**
@@ -25,6 +25,8 @@ an **Ear** (input) and a **Mouth** (output).
   - [x] Play audio output in voice channels
     - [ ] Add default fallback channel?
 - [ ] Split into multiple services (Same Token)
+    - [x] [Chat Ear](../../ear/discord_chat)
+    - [ ] Chat Mouth
 - [ ] Add configurable settings.
 - [ ] Better Documentation
 

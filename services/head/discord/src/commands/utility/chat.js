@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
-const { startListening, stopListening } = require('./chat/listen.js');
 const { startSpeaking, stopSpeaking } = require('./chat/speak.js');
 const { getStatus } = require('../../rmq/RMQConnection.js');
 
@@ -7,10 +6,6 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('chat')
 		.setDescription('Manage chat functionality')
-		.addSubcommand(subcommand =>
-		    subcommand
-		        .setName('listen')
-		        .setDescription('Enable chat listening mode'))
 		.addSubcommand(subcommand =>
 		    subcommand
 		        .setName('speak')
@@ -29,41 +24,34 @@ module.exports = {
         console.log(`/chat ${subcommand} command executed`);
 
         switch (subcommand) {
-        case 'listen':
-            await interaction.deferReply();
+            case 'speak':
+                await interaction.deferReply();
 
-            startListening(interaction.client);
+                startSpeaking(interaction.client);
 
-            return await interaction.editReply(':ear: Listening to what you have to say!');
+                return await interaction.editReply(':mouth: Speaking my mind!');
 
-        case 'speak':
-            await interaction.deferReply();
+            case 'disable':
+                await interaction.deferReply();
 
-            startSpeaking(interaction.client);
+                stopSpeaking(interaction.client);
 
-            return await interaction.editReply(':mouth: Speaking my mind!');
+                return await interaction.editReply(':hear_no_evil: Deafened and muted!');
 
-        case 'disable':
-            await interaction.deferReply();
+            case 'status':
+                await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
-            stopListening(interaction.client);
-            stopSpeaking(interaction.client);
+                const { mouthPublisher, connection, channel } = getStatus(interaction.client);
+                const mouthStatus = `${mouthPublisher ? '✔️' : '❌'} Mouth is ${mouthPublisher ? 'ready' : 'not ready'}`;
+                const connectionStatus = `${connection ? '✔️' : '❌'} Connection: ${connection ? 'connected' : 'disconnected'}`;
+                const channelStatus = `${channel ? '✔️' : '❌'} Channel: ${channel ? 'active' : 'inactive'}`;
 
-            return await interaction.editReply(':hear_no_evil: Deafened and muted!');
+                return await interaction.editReply(`${mouthStatus}\n${connectionStatus}\n${channelStatus}`);
 
-        case 'status':
-            await interaction.deferReply({flags: MessageFlags.Ephemeral});
-
-            const { earListener, mouthPublisher, connection, channel } = getStatus(interaction.client);
-            const earStatus = `${earListener ? '✔️' : '❌'} Ear is ${earListener ? 'ready' : 'not ready'}`;
-            const mouthStatus = `${mouthPublisher ? '✔️' : '❌'} Mouth is ${mouthPublisher ? 'ready' : 'not ready'}`;
-            const connectionStatus = `${connection ? '✔️' : '❌'} Connection: ${connection ? 'connected' : 'disconnected'}`;
-            const channelStatus = `${channel ? '✔️' : '❌'} Channel: ${channel ? 'active' : 'inactive'}`;
-
-            return await interaction.editReply(`${earStatus}\n${mouthStatus}\n${connectionStatus}\n${channelStatus}`);
-
-        default:
-            return await interaction.reply({ content: ':interrobang: Unknown subcommand. Please use a valid subcommand.', flags: MessageFlags.Ephemeral });
+            default:
+                // Ignore unknown subcommands. Potentially let other Bot modules handle them.
+                console.debug(`Unknown subcommand '$/chat ${subcommand}'. Ignoring.`);
+                return;
         }
     }
 };
