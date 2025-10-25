@@ -56,16 +56,18 @@ const rest = new REST().setToken(token);
 			const match = existing.find((c) => c.name === cmd.name);
 			if (match) {
 				// Update existing command
+				// Merge subcommands (if any)
+				const merged = mergeSubcommands(match, cmd);
 				await rest.patch(
-				Routes.applicationGuildCommand(clientId, guildId, match.id),
-				{ body: cmd }
+					Routes.applicationGuildCommand(clientId, guildId, match.id),
+					{ body: merged }
 				);
 				console.log(`Updated command ${cmd.name}`);
 			} else {
 				// Create new command
 				await rest.post(
-				Routes.applicationGuildCommands(clientId, guildId),
-				{ body: cmd }
+					Routes.applicationGuildCommands(clientId, guildId),
+					{ body: cmd }
 				);
 				console.log(`Created command ${cmd.name}`);
 			}
@@ -74,3 +76,22 @@ const rest = new REST().setToken(token);
 		console.error(error);
 	}
 })();
+
+/** Merge new subcommands into existing ones without removing old ones */
+function mergeSubcommands(existing: any, incoming: any): any {
+  const merged = { ...existing, ...incoming };
+
+  if (existing.options && incoming.options) {
+    const mergedOptions = [...existing.options];
+
+    for (const opt of incoming.options) {
+      const i = mergedOptions.findIndex(o => o.name === opt.name && o.type === opt.type);
+      if (i >= 0) mergedOptions[i] = opt; // update
+      else mergedOptions.push(opt);       // add
+    }
+
+    merged.options = mergedOptions;
+  }
+
+  return merged;
+}
