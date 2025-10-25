@@ -60,7 +60,7 @@ export class Bot extends Client {
     }
 
     public set listening(value: boolean) {
-        this._listening = value ?? this.ready();
+        this._listening = value && this.ready();
     }
 
     public get listening(): boolean {
@@ -68,7 +68,7 @@ export class Bot extends Client {
     }
 
     private ready(): boolean {
-        return this.isReady() && this.rmqManager.connection !== null && this.rmqManager.channel !== null;
+        return this.rmqManager.connection !== null && this.rmqManager.channel !== null;
     }
 
     public async start(token: string) {
