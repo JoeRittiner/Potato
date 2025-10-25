@@ -21,7 +21,7 @@ export async function loadCommands(bot: Bot, pathname: string) {
             const { default: command }: {default: Command} = await import(path.join(commandsPath, file));
             try{
                 if ('data' in command && 'execute' in command) {
-                    console.log(command.data.name);
+                    console.log(`'${command.data.name}' loaded.'`);
                     bot.commands.set(command.data.name, command);
                 } else {
                     console.warn(`The command at ${file} is missing a required "data" or "execute" property.`);

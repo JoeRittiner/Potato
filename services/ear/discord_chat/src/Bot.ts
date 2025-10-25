@@ -48,12 +48,13 @@ export class Bot extends Client {
     }
 
     // Settup for later expansion. Hence the injection of rmqManager.
-    private onMessage(rmqManager: RMQManager,  message: Message) {
+    private async onMessage(rmqManager: RMQManager,  message: Message) {
         if (!this.listening) return;
+        if (message.author.bot) return;
         console.log(`Sending message: '${message.content}'`)
         try {
             // TODO: make configurable what queue to send to
-            rmqManager.sendMessage('ear_to_brain', message.content);
+            await rmqManager.sendMessage('ear_to_brain', message.content);
         } catch (error) {
             console.error('Error sending message to RMQ:', error);
         }
