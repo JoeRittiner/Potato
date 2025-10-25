@@ -11,15 +11,9 @@ const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.DISCORD_CLIENT_ID;
 const guildId = process.env.DISCORD_GUILD_ID;
 
-if (!token) {
-	throw new Error('DISCORD_TOKEN environment variable is not set.');
-}
-if (!clientId) {
-	throw new Error('DISCORD_CLIENT_ID environment variable is not set.');
-}
-if (!guildId) {
-	throw new Error('DISCORD_GUILD_ID environment variable is not set.');
-}
+if (!token) throw new Error('DISCORD_TOKEN environment variable is not set.');
+if (!clientId) throw new Error('DISCORD_CLIENT_ID environment variable is not set.');
+if (!guildId) throw new Error('DISCORD_GUILD_ID environment variable is not set.');
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier
@@ -48,17 +42,35 @@ const rest = new REST().setToken(token);
 // and deploy your commands!
 (async () => {
 	try {
+
+		// Fetch existing commands
+		const existing = await rest.get(Routes.applicationGuildCommands(clientId, guildId));
+
+		if (!Array.isArray(existing)) {
+			throw new Error('Unexpected response when fetching existing commands');
+		}
+
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
-		// The put method is used to fully refresh all commands in the guild with the current set
-		const data = await rest.put(
-			Routes.applicationGuildCommands(clientId, guildId),
-			{ body: commands },
-		) as unknown[];
-
-		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+		for (const cmd of commands) {
+			const match = existing.find((c) => c.name === cmd.name);
+			if (match) {
+				// Update existing command
+				await rest.patch(
+				Routes.applicationGuildCommand(clientId, guildId, match.id),
+				{ body: cmd }
+				);
+				console.log(`Updated command ${cmd.name}`);
+			} else {
+				// Create new command
+				await rest.post(
+				Routes.applicationGuildCommands(clientId, guildId),
+				{ body: cmd }
+				);
+				console.log(`Created command ${cmd.name}`);
+			}
+		}
 	} catch (error) {
-		// And of course, make sure you catch and log any errors!
 		console.error(error);
 	}
 })();
