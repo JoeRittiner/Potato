@@ -16,6 +16,11 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  clear:
+    build: .
+    env_file: .env
+    command: node src/clear-commands.js
+
   update:
     build: .
     env_file: .env
