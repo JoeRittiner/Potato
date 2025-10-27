@@ -1,7 +1,20 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
-from services.shared_libs.RabbitMQ import RabbitMQProducer
+from services.shared_libs.Brokers import Producer
 
 
-class AbstractEar(RabbitMQProducer, ABC):
-    pass
+class AbstractEar(ABC):
+    def __init__(self, producer: Producer):
+        self._producer = producer
+
+    @abstractmethod
+    def start_listening(self):
+        pass
+
+    @abstractmethod
+    def stop_listening(self):
+        pass
+
+    @abstractmethod
+    def shutdown(self):
+        pass
