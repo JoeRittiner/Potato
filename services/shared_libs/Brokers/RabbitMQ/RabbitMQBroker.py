@@ -41,7 +41,8 @@ class RabbitMQBroker(Broker):
             return True  # Exit if connection is successful
         except AMQPConnectionError as e:
             self.logger.error(
-                f"Failed to connect to RabbitMQ after attempts.")
+                f"Failed to connect to RabbitMQ after {self._connection_parameters.connection_attempts} attempts."
+            )
             return False
         except Exception as e:
             self.logger.error(f"Failed to connect to RabbitMQ: {e}")
@@ -49,17 +50,24 @@ class RabbitMQBroker(Broker):
 
     def disconnect(self):
         self.logger.info("Closing RabbitMQ connection.")
+        if self._channel and self._channel.is_open:
+            self._channel.close()
+            self.logger.debug("Channel closed.")
+        else:
+            self.logger.debug("Channel already closed.")
         if self._connection and self._connection.is_open:
             self._connection.close()
             self.logger.debug("Connection closed.")
         else:
             self.logger.debug("Connection already closed.")
+        self.logger.info("Disconnected from RabbitMQ successfully.")
 
     def __del__(self):
         self.logger.debug("Deleting RabbitMQ instance.")
-        self.logger.info("Disconnecting from RabbitMQ...")
-        try:
-            self.disconnect()
-        except AMQPConnectionError as e:
-            self.logger.error(f"Failed to disconnect from RabbitMQ: {e}")
-        self.logger.info("RabbitMQ instance deleted.")
+        if self.ready:
+            try:
+                self.disconnect()
+            except AMQPConnectionError as e:
+                self.logger.error(f"Failed to disconnect from RabbitMQ: {e}")
+        else:
+            self.logger.debug("RabbitMQ connection is already closed.")

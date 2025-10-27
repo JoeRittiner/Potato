@@ -216,7 +216,7 @@ class TestResourceCleanup:
 
         del instance
         mock_connection.close.assert_called_once()  # Ensure disconnect wasn't called again
-        assert "Connection already closed." in capsys.readouterr().out
+        assert "connection is already closed." in capsys.readouterr().out
 
     def test_destructor_handles_no_active_connection(self, mock_pika, capsys):
         """Test that the destructor runs without error if connect() was never called."""
@@ -228,4 +228,4 @@ class TestResourceCleanup:
 
         mock_connection.close.assert_not_called()
         captured = capsys.readouterr()
-        assert "Connection already closed." in captured.out
+        assert "connection is already closed." in captured.out
