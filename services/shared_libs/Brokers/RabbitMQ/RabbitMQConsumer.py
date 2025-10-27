@@ -1,4 +1,8 @@
-from typing import Callable
+from typing import Generator, Tuple, Optional
+
+from pika import BasicProperties
+from pika.adapters.blocking_connection import BlockingChannel
+from pika.spec import Basic
 
 from services.shared_libs.Brokers.Consumer import Consumer
 from services.shared_libs.Brokers.RabbitMQ.RabbitMQBroker import RabbitMQBroker
@@ -11,9 +15,8 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
             connection_parameters,
             exchange: str,
             queue: str,
-            callback: Callable,
             exclusive_queue: bool = False,
-            name: str = None):
+            inactivity_timeout: Optional[float] = None):
         RabbitMQBroker.__init__(self, connection_parameters)
         Consumer.__init__(self)
 
@@ -26,17 +29,18 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
         if not isinstance(exclusive_queue, bool):
             raise TypeError("exclusive_queue must be of type bool")
 
-        if not callable(callback):
-            raise TypeError("callback must be a callable function")
+        if not isinstance(inactivity_timeout, float | None):
+            raise TypeError("inactivity_timeout must be of type float or None")
+        elif inactivity_timeout is not None and not inactivity_timeout >= 0:
+            raise ValueError("inactivity_timeout must be greater than or equal to 0")
 
         self._exchange = exchange
 
         self._queue_name = queue
         self._exclusive_queue = exclusive_queue
 
-        self._callback = callback
-
-        self._consumer_tag = name or __class__.__name__
+        self._inactivity_timeout = inactivity_timeout or None
+        self._consuming = False
 
     def connect(self):
         connected = super().connect()
@@ -58,7 +62,11 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
             self.logger.info(f"Queue `{self._queue_name}` declared successfully.")
         return connected
 
-    def consume(self, topic):
+    def disconnect(self):
+        self.stop_consuming()
+        super().disconnect()
+
+    def consume(self, topic) -> Generator[Tuple[BlockingChannel, Basic.Deliver, BasicProperties, bytes], None, None]:
         self._channel.queue_bind(
             queue=self._queue_name,
             exchange=self._exchange,
@@ -66,30 +74,24 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
         )
         self.logger.info(f"Queue `{self._queue_name}` bound to exchange `{self._exchange}` successfully.")
 
-        self._consumer_tag = self._channel.basic_consume(
+        self._consuming = True
+        self.logger.info(f"Consuming messages from queue `{self._queue_name}`.")
+        for method, properties, body in self._channel.consume(
             queue=self._queue_name,
             auto_ack=False,
-            on_message_callback=self._callback,
             exclusive=self._exclusive_queue,
-            consumer_tag=self._consumer_tag
-        )
-
-        self._channel.start_consuming()
+                inactivity_timeout=self._inactivity_timeout
+        ):
+            yield self._channel, method, properties, body
 
     def stop_consuming(self):
-        if self._consumer_tag:
-            un_acknowledged = self._channel.basic_cancel(self._consumer_tag)
-            self.logger.info(f"Stopped consuming messages from queue `{self._queue_name}`.")
-            self._consumer_tag = None
+        if self._channel and self._consuming:
+            self.logger.info("Stopping consumption.")
+            self._channel.cancel()
+        elif not self._consuming:
+            self.logger.debug("Not consuming messages.")
+        self._consuming = False
 
-            if un_acknowledged:
-                self._handle_unacknowledged_messages(un_acknowledged)
-
-    # TODO: Handle unacknowledged messages better.
-    def _handle_unacknowledged_messages(self, un_acknowledged):
-        for ch, method, properties, body in un_acknowledged:
-            self.logger.info(f"Unacknowledged message: {body}")
-            ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def __del__(self):
         self.stop_consuming()
