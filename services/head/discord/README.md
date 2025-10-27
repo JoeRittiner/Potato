@@ -8,7 +8,7 @@ an **Ear** (input) and a **Mouth** (output).
 > Trying to access a microphone from a Docker container is difficult, hence the discord work-around.
 >
 > **Why discord.js instead of discord.py?**<br>
-> Discord.js supports voice channels, which are required for (near) real-time audio input/output, using Discord. (A
+> Discord.js supports voice channels, which are required for audio input, using Discord. (A
 > planned feature.)
 
 ---
@@ -25,8 +25,11 @@ an **Ear** (input) and a **Mouth** (output).
   - [x] Play audio output in voice channels
     - [ ] Add default fallback channel?
 - [ ] Split into multiple services (Same Token)
-    - [x] [Chat Ear](../../ear/discord_chat)
-    - [ ] Chat Mouth
+    - [x] [Chat Ear](../../ear/discord_chat) (JS)
+    - [ ] Chat Ear (Python)
+    - [ ] Chat Mouth (Python)
+    - [ ] VC Mouth (Python)
+    - [ ] VC Ear (JS + Pytjon)
 - [ ] Add configurable settings.
 - [ ] Better Documentation
 
