@@ -92,6 +92,12 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
             self.logger.debug("Not consuming messages.")
         self._consuming = False
 
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.disconnect()
 
     def __del__(self):
         self.stop_consuming()

@@ -49,3 +49,10 @@ class RabbitMQProducer(RabbitMQBroker, Producer):
 
     def _on_connection_unblocked(self, unblocked: pika.spec.Connection.Unblocked):
         self.logger.info(f"Connection unblocked.")
+
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.disconnect()
