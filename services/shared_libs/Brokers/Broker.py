@@ -22,6 +22,11 @@ class Broker(ABC):
         pass
 
     @abstractmethod
+    def shutdown(self):
+        """Close the connection and clean up resources."""
+        pass
+
+    @abstractmethod
     def __del__(self):
         """Close and clean up resources."""
         pass

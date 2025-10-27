@@ -103,7 +103,6 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
         for method, properties, body in message_queue:
             if method is None and properties is None and body is None:
                 yield None
-            print(properties)
             yield RabbitMQMessage(self._channel, method, properties, body)
 
     def stop_consuming(self):
@@ -121,6 +120,6 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.disconnect()
 
-    def __del__(self):
+    def shutdown(self):
         self.stop_consuming()
-        super().__del__()
+        super().shutdown()

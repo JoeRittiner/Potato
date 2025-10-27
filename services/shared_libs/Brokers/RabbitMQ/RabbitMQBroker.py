@@ -62,8 +62,7 @@ class RabbitMQBroker(Broker):
             self.logger.debug("Connection already closed.")
         self.logger.info("Disconnected from RabbitMQ successfully.")
 
-    def __del__(self):
-        self.logger.debug("Deleting RabbitMQ instance.")
+    def shutdown(self):
         if self.ready:
             try:
                 self.disconnect()
@@ -71,3 +70,9 @@ class RabbitMQBroker(Broker):
                 self.logger.error(f"Failed to disconnect from RabbitMQ: {e}")
         else:
             self.logger.debug("RabbitMQ connection is already closed.")
+
+        self.logger.info("Shut down RabbitMQ instance successfully.")
+
+
+    def __del__(self):
+        self.shutdown()
