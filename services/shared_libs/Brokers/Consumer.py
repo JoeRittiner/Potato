@@ -1,18 +1,10 @@
 from abc import ABC, abstractmethod
 
+from services.shared_libs.Brokers.Broker import Broker
 
-class Consumer(ABC):
-    @abstractmethod
-    def connect(self):
-        """Establish connection to the broker."""
-        pass
 
+class Consumer(Broker, ABC):
     @abstractmethod
     def consume(self, topic: str):
         """Consume messages from a topic/queue."""
-        pass
-
-    @abstractmethod
-    def close(self):
-        """Close the connection."""
         pass

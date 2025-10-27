@@ -1,18 +1,10 @@
 from abc import ABC, abstractmethod
 
+from services.shared_libs.Brokers.Broker import Broker
 
-class Producer(ABC):
-    @abstractmethod
-    def connect(self):
-        """Establish connection to the broker."""
-        pass
 
+class Producer(Broker, ABC):
     @abstractmethod
     def send(self, topic: str, message: dict):
         """Send a message to a topic/queue."""
-        pass
-
-    @abstractmethod
-    def close(self):
-        """Close the connection."""
         pass
