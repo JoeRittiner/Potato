@@ -1,11 +1,28 @@
-from typing import Generator, Tuple, Optional
+from typing import Generator, Optional
 
-from pika import BasicProperties
 from pika.adapters.blocking_connection import BlockingChannel
-from pika.spec import Basic
+from pika.spec import Basic, BasicProperties
 
-from services.shared_libs.Brokers.Consumer import Consumer
+from services.shared_libs.Brokers.Consumer import Consumer, Message
 from services.shared_libs.Brokers.RabbitMQ.RabbitMQBroker import RabbitMQBroker
+
+
+# Excessive Abstraction?
+class RabbitMQMessage(Message):
+    channel: BlockingChannel
+    method: Basic.Deliver
+
+    def __init__(self, channel: BlockingChannel, method: Basic.Deliver, properties: BasicProperties, body: bytes):
+        properties = {k: v for k, v in properties.__dict__.items() if v}
+        super().__init__(body, properties)
+        self.channel = channel
+        self.method = method
+
+    def mark_processed(self):
+        self.channel.basic_ack(self.method.delivery_tag)
+
+    def mark_failed(self, requeue=True):
+        self.channel.basic_nack(self.method.delivery_tag, requeue=requeue)
 
 
 class RabbitMQConsumer(RabbitMQBroker, Consumer):
@@ -29,7 +46,7 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
         if not isinstance(exclusive_queue, bool):
             raise TypeError("exclusive_queue must be of type bool")
 
-        if not isinstance(inactivity_timeout, float | None):
+        if not isinstance(inactivity_timeout, int | float | None):
             raise TypeError("inactivity_timeout must be of type float or None")
         elif inactivity_timeout is not None and not inactivity_timeout >= 0:
             raise ValueError("inactivity_timeout must be greater than or equal to 0")
@@ -66,7 +83,7 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
         self.stop_consuming()
         super().disconnect()
 
-    def consume(self, topic) -> Generator[Tuple[BlockingChannel, Basic.Deliver, BasicProperties, bytes], None, None]:
+    def consume(self, topic) -> Generator[RabbitMQMessage | None, None, None]:
         self._channel.queue_bind(
             queue=self._queue_name,
             exchange=self._exchange,
@@ -74,15 +91,20 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
         )
         self.logger.info(f"Queue `{self._queue_name}` bound to exchange `{self._exchange}` successfully.")
 
-        self._consuming = True
-        self.logger.info(f"Consuming messages from queue `{self._queue_name}`.")
-        for method, properties, body in self._channel.consume(
+        message_queue = self._channel.consume(
             queue=self._queue_name,
             auto_ack=False,
             exclusive=self._exclusive_queue,
-                inactivity_timeout=self._inactivity_timeout
-        ):
-            yield self._channel, method, properties, body
+            inactivity_timeout=self._inactivity_timeout
+        )
+
+        self._consuming = True
+        self.logger.info(f"Consuming messages from queue `{self._queue_name}`.")
+        for method, properties, body in message_queue:
+            if method is None and properties is None and body is None:
+                yield None
+            print(properties)
+            yield RabbitMQMessage(self._channel, method, properties, body)
 
     def stop_consuming(self):
         if self._channel and self._consuming:
