@@ -2,52 +2,16 @@
 Discord Chat Ear
 ================
 
-Discord Chat Ear is a simple Discord bot that listens to messages and forwards them to `ear_to_brain` via RabbitMQ.
+The Discord Chat Ear is a RMQ Publisher that listens to Discord messages and forwards them to Brain via ``ear_to_brain``.
 """
 
 import os
-from typing import Callable
 
 import pika
-from discord import Client, app_commands, Object, Message, Intents, Interaction
+from discord import Message, Interaction
 
 from services.ear.abstract_ear import AbstractEar
-
-
-class Bot(Client):
-    """
-    Simple Discord bot.
-
-    :param on_message: Callback function to handle messages.
-    """
-
-    def __init__(self, on_message: Callable[[Message], None]):
-        intents = Intents.default()
-        intents.message_content = True
-        super().__init__(intents=intents)
-
-        self.tree = app_commands.CommandTree(self)
-        self.guild = Object(id=os.getenv('DISCORD_GUILD_ID'))
-
-        self._on_message = on_message
-
-    async def on_ready(self):
-        """Handle when the bot is ready."""
-        print(f'Logged in as {self.user} (ID: {self.user.id})')
-
-        try:
-            synced = await self.tree.sync(guild=self.guild)
-            print(f'Synced {len(synced)} commands to guild {self.guild.id}')
-        except Exception as e:
-            print(f'Error syncing commands: {e}')
-
-    async def on_message(self, message: Message):
-        """Handle Discord messages."""
-        if message.author == self.user:
-            return
-        elif message.author.bot:
-            return
-        self._on_message(message)
+from services.ear.discordpy_chat.bot import Bot
 
 
 class DiscordEar(AbstractEar):
@@ -60,7 +24,7 @@ class DiscordEar(AbstractEar):
         self._listening = False
 
     def run(self):
-        """Start the discord bot."""
+        """Start the services discord bot."""
         self._bot.run(os.getenv('DISCORD_TOKEN'))
 
     def _on_message(self, message: Message):
