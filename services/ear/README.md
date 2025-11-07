@@ -6,6 +6,11 @@ Ears handle incoming messages.
 
 A simple Ear that sends heartbeat messages at regular intervals.
 
+## Discord Chat Ear
+
+An Ear that listens to Discord messages and sends them to the Brain.  
+Listening can be enabled and disabled via the `/listen` and `/stop` commands.
+
 ## TODO
 
 - [ ] Add RabbitMQ Ear (Listens for messages from RabbitMQ via topic?)

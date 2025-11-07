@@ -10,7 +10,12 @@ Examples:
 
 ### ✅ Heartbeat Ear _(implemented)_
 
-A simple Ear that sends heartbeat messages at regular intervals. See [Ear](./ear/README.md) for more details.
+A simple Ear that sends heartbeat messages at regular intervals. See [Ear](./ear/README.md#heartbeat-ear) for more
+details.
+
+### ✅ Discord Chat Ear _(implemented)_
+
+A simple Ear that sends Discord messages to the Brain. See [Ear](./ear/README.md#discord-chat-ear) for more details.
 
 ---
 
