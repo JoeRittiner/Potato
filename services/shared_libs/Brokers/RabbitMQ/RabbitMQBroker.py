@@ -68,10 +68,9 @@ class RabbitMQBroker(Broker):
                 self.disconnect()
             except AMQPConnectionError as e:
                 self.logger.error(f"Failed to disconnect from RabbitMQ: {e}")
+            self.logger.info("Shut down RabbitMQ instance successfully.")
         else:
             self.logger.debug("RabbitMQ connection is already closed.")
-
-        self.logger.info("Shut down RabbitMQ instance successfully.")
 
 
     def __del__(self):
