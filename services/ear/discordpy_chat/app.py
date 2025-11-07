@@ -1,3 +1,10 @@
+"""
+Discord Chat Ear
+================
+
+Discord Chat Ear is a simple Discord bot that listens to messages and forwards them to `ear_to_brain` via RabbitMQ.
+"""
+
 import os
 from typing import Callable
 
@@ -8,7 +15,11 @@ from services.ear.abstract_ear import AbstractEar
 
 
 class Bot(Client):
-    """Simple Discord bot."""
+    """
+    Simple Discord bot.
+
+    :param on_message: Callback function to handle messages.
+    """
 
     def __init__(self, on_message: Callable[[Message], None]):
         intents = Intents.default()
