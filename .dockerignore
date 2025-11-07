@@ -1,0 +1,29 @@
+# Git
+**/.git
+**/.github
+
+# Docker
+docker-compose.yml
+Dockerfile
+.docker
+.dockerignore
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+
+# JS
+**/node_modules
+
+# Docs
+docs
+
+# Env Variables
+.env
+.env.example
+
+# PyCharm
+.idea
+
+# VS Code
+.vscode
