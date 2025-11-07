@@ -10,11 +10,12 @@ Welcome to the documentation for the Potato project.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Service Types
+   :titlesonly:
 
-   services/modules
+   services/ear/ear
+
    api/rabbitmq_api
-   api/messages
 
 
 Indices and tables
