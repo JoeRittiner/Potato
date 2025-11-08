@@ -6,15 +6,25 @@
 Potato Documentation
 ====================
 
-Welcome to the documentation for the Potato project.
+.. include:: ../../.github/README.md
+   :parser: markdown
+   :start-line: 1
+
+----
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Service Types
+   :titlesonly:
 
-   services/modules
+   services/ear/ear
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API
+   :titlesonly:
+
    api/rabbitmq_api
-   api/messages
 
 
 Indices and tables

@@ -1,0 +1,15 @@
+sphinx
+sphinx_rtd_theme
+myst_parser
+
+# Shared
+pika ~= 1.3
+
+# Ears
+discord.py ~= 2.6
+
+# Mouth
+# None so far
+
+# Brain
+# None so far

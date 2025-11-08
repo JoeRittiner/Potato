@@ -8,8 +8,8 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../services'))
-# sys.path.insert(1, os.path.abspath('../../launcher'))
+
+sys.path.insert(0, os.path.abspath('../../'))
 
 project = 'Potato'
 copyright = '2025, Josef Rittiner'
@@ -22,8 +22,14 @@ release = '0.0.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',  # For Google and NumPy style docstrings
-    'sphinx.ext.viewcode'   # Optional: to include links to source code
+    'sphinx.ext.viewcode',  # Optional: to include links to source code
+    'myst_parser'
 ]
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 templates_path = ['_templates']
 exclude_patterns = []
