@@ -7,7 +7,6 @@ The Discord Chat Ear is a RMQ Publisher that listens to Discord messages and for
 
 import os
 
-import pika
 from discord import Message, Interaction, CustomActivity
 
 from services.ear.abstract_ear import AbstractEar
@@ -56,10 +55,10 @@ class DiscordEar(AbstractEar):
     def _setup(self) -> None:
         pass
 
-    def _on_connection_blocked(self, blocked: pika.spec.Connection.Blocked):
+    def _on_connection_blocked(self, blocked):
         pass
 
-    def _on_connection_unblocked(self, unblocked: pika.spec.Connection.Unblocked):
+    def _on_connection_unblocked(self, unblocked):
         pass
 
 
