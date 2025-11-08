@@ -8,7 +8,7 @@ The Discord Chat Ear is a RMQ Publisher that listens to Discord messages and for
 import os
 
 import pika
-from discord import Message, Interaction
+from discord import Message, Interaction, CustomActivity
 
 from services.ear.abstract_ear import AbstractEar
 from services.ear.discordpy_chat.bot import Bot
@@ -39,13 +39,18 @@ class DiscordEar(AbstractEar):
         @self._bot.tree.command(name="listen", description="Start listening to messages.", guild=self._bot.guild)
         async def listen(interaction: Interaction):
             self._listening = True
-            self.logger.info("Listening to messages.")
+            activity = CustomActivity(name="Listening to messages", emoji="👂")  # Note: Emoji doesn't show up
+            await interaction.client.change_presence(activity=activity)
+
+            self.logger.info("👂 Listening to messages.")
             await interaction.response.send_message("Listening to messages.")
 
         @self._bot.tree.command(name="stop", description="Stop listening to messages.", guild=self._bot.guild)
         async def stop(interaction: Interaction):
             self._listening = False
-            self.logger.info("Stopping listening to messages.")
+            await interaction.client.change_presence(activity=None)
+
+            self.logger.info("🙉 Stopping listening to messages.")
             await interaction.response.send_message("Stopped listening to messages.")
 
     def _setup(self) -> None:
@@ -59,10 +64,11 @@ class DiscordEar(AbstractEar):
 
 
 def main():
-    producer = DiscordEar()
-    success = producer.connect()
-    if success:
-        producer.run()  # Blocking call.
+    """Start the service."""
+    ear = DiscordEar()
+    connected = ear.connect()
+    if connected:
+        ear.run()  # Blocking call.
 
 
 if __name__ == '__main__':
