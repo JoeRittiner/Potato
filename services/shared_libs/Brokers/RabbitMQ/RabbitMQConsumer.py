@@ -1,28 +1,8 @@
 from typing import Generator, Optional
 
-from pika.adapters.blocking_connection import BlockingChannel
-from pika.spec import Basic, BasicProperties
-
-from services.shared_libs.Brokers.Consumer import Consumer, Message
+from services.shared_libs.Brokers.Consumer import Consumer
 from services.shared_libs.Brokers.RabbitMQ.RabbitMQBroker import RabbitMQBroker
-
-
-# Excessive Abstraction?
-class RabbitMQMessage(Message):
-    channel: BlockingChannel
-    method: Basic.Deliver
-
-    def __init__(self, channel: BlockingChannel, method: Basic.Deliver, properties: BasicProperties, body: bytes):
-        properties = {k: v for k, v in properties.__dict__.items() if v}
-        super().__init__(body, properties)
-        self.channel = channel
-        self.method = method
-
-    def mark_processed(self):
-        self.channel.basic_ack(self.method.delivery_tag)
-
-    def mark_failed(self, requeue=True):
-        self.channel.basic_nack(self.method.delivery_tag, requeue=requeue)
+from services.shared_libs.Brokers.RabbitMQ.RabbitMQMessage import RabbitMQMessage
 
 
 class RabbitMQConsumer(RabbitMQBroker, Consumer):
@@ -91,7 +71,8 @@ class RabbitMQConsumer(RabbitMQBroker, Consumer):
         )
         self.logger.info(f"Queue `{self._queue_name}` bound to exchange `{self._exchange}` successfully.")
 
-        message_queue = self._channel.consume(
+        # This does return a generator.
+        message_queue: Generator = self._channel.consume(
             queue=self._queue_name,
             auto_ack=False,
             exclusive=self._exclusive_queue,
