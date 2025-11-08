@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Ears &#8212; Potato 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=7026087e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Discord Chat Ear" href="discordpy_chat.html" />
+    <link rel="prev" title="Potato Documentation" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="ears">
+<h1>Ears<a class="headerlink" href="#ears" title="Link to this heading">¶</a></h1>
+<p>Ears handle incoming messages.</p>
+<section id="heartbeat-ear">
+<h2>Heartbeat Ear<a class="headerlink" href="#heartbeat-ear" title="Link to this heading">¶</a></h2>
+<p>A simple Ear that sends heartbeat messages at regular intervals.</p>
+</section>
+<section id="discord-chat-ear">
+<h2>Discord Chat Ear<a class="headerlink" href="#discord-chat-ear" title="Link to this heading">¶</a></h2>
+<p>An Ear that listens to Discord messages and sends them to the Brain.
+Listening can be enabled and disabled via the <code class="docutils literal notranslate"><span class="pre">/listen</span></code> and <code class="docutils literal notranslate"><span class="pre">/stop</span></code> commands.</p>
+</section>
+<section id="todo">
+<h2>TODO<a class="headerlink" href="#todo" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>[ ] Add RabbitMQ Ear (Listens for messages from RabbitMQ via topic?)</p>
+<ul>
+<li><p>Or no?, one RabbitMQ instance per Potato? -&gt; Communicate somehow else.
+For isolation, each Potato gets its own RabbitMQ instance.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="implementations">
+<h2>Implementations<a class="headerlink" href="#implementations" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="discordpy_chat.html">Discord Chat Ear</a></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Potato</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Service Types</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Ears</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="discordpy_chat.html">Discord Chat Ear</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rabbitmq_api.html">RabbitMQ API &amp; Message Flows</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../../index.html" title="previous chapter">Potato Documentation</a></li>
+      <li>Next: <a href="discordpy_chat.html" title="next chapter">Discord Chat Ear</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Josef Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/services/ear/ear.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

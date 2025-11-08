@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Potato Documentation &#8212; Potato 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=7026087e"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Ears" href="services/ear/ear.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="potato-documentation">
+<h1>Potato Documentation<a class="headerlink" href="#potato-documentation" title="Link to this heading">¶</a></h1>
+<p><strong>Potato</strong> is a modular toy project inspired by <a class="reference external" href="https://en.wikipedia.org/wiki/Mr._Potato_Head">Mr. Potato Head</a>.
+Each “body part” is a self-contained service, running in its own Docker container and communicating with others through
+RabbitMQ.</p>
+<p><strong>The goal:</strong> learn and experiment with concepts like Docker, service architecture, RabbitMQ, and API design — while
+keeping things playful and modular.</p>
+<hr class="docutils" />
+<section id="architecture">
+<h2>🧩 Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Backbone</strong> → RabbitMQ (messaging between parts)</p></li>
+<li><p><strong>Ear</strong> → Input services (listening to the world)</p></li>
+<li><p><strong>Brain</strong> → Processing services (thinking/responding)</p></li>
+<li><p><strong>Mouth</strong> → Output services (communicating back)</p></li>
+<li><p><strong>More</strong> coming soon?</p></li>
+</ul>
+<p><strong>🔀 Replaceability:</strong></p>
+<p>Each part is <strong>independent</strong> and <strong>replaceable</strong>. For example, you can swap out one “Ear” for another without touching
+the Brain or Mouth.</p>
+<p><strong>💡 Independence:</strong></p>
+<p>All services are designed to run on their own without depending on specific others. They may sit idle if no messages
+arrive, but they won’t crash just because another service isn’t running.
+The only exception: everything requires the Backbone (RabbitMQ) to be up for communication.</p>
+</section>
+<hr class="docutils" />
+<section id="basic-potato-mvp">
+<h2>🥔 Basic Potato (MVP)<a class="headerlink" href="#basic-potato-mvp" title="Link to this heading">¶</a></h2>
+<p>The current MVP Potato runs with:</p>
+<ul class="simple">
+<li><p>Heartbeat Ear</p></li>
+<li><p>Echo Brain</p></li>
+<li><p>Console Out Mouth</p></li>
+</ul>
+<p>This setup demonstrates the full cycle (input → process → output).
+See the <a href="#id1"><span class="problematic" id="id2">services</span></a> for more details on each part.</p>
+</section>
+<hr class="docutils" />
+<section id="quick-start">
+<h2>⚡ Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
+<p>Clone the repo and spin up the MVP Potato:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/JoeRittiner/Potato.git
+<span class="nb">cd</span><span class="w"> </span>Potato
+cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+<span class="c1"># Edit .env file as needed</span>
+docker-compose<span class="w"> </span>up
+</pre></div>
+</div>
+<p>You should see heartbeat messages appear in the console, passed from Ear → Brain → Mouth.</p>
+</section>
+<hr class="docutils" />
+<section id="next-steps-ideas">
+<h2>🚀 Next Steps / Ideas<a class="headerlink" href="#next-steps-ideas" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>More Ears (Voice input, GUI, Flask)</p></li>
+<li><p>Smarter Brains (OpenAI APIs, Docker Model Runner)</p></li>
+<li><p>Richer Mouths (GUI, Text-to-Speech)</p></li>
+<li><p>Discord Bot (Ear + Mouth)</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="documentation">
+<h2>📚 Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<p>Check out the <a class="reference external" href="https://joerittiner.github.io/Potato/">docs</a> for more details.</p>
+</section>
+<hr class="docutils" />
+<section id="i-note">
+<h2>ℹ️ Note<a class="headerlink" href="#i-note" title="Link to this heading">¶</a></h2>
+<p>This is a <strong>toy project</strong>. Mainly a sandbox for me to learn Docker, RabbitMQ, and service-based design. As well as other
+concepts and technologies.</p>
+</section>
+<hr class="docutils" />
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Service Types</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="services/ear/ear.html">Ears</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="services/ear/discordpy_chat.html">Discord Chat Ear</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/rabbitmq_api.html">RabbitMQ API &amp; Message Flows</a></li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Potato</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Service Types</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="services/ear/ear.html">Ears</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/rabbitmq_api.html">RabbitMQ API &amp; Message Flows</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="services/ear/ear.html" title="next chapter">Ears</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Josef Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
